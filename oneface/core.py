@@ -1,3 +1,5 @@
+from copy import copy
+from ctypes import ArgumentError
 import inspect
 import functools
 
@@ -9,7 +11,7 @@ class Arg():
     def __init__(self, type=str, range=None, **kwargs):
         self.type = type
         try:
-            self.check_type, self.check_func = self.type_to_check[type.__name__]
+            self.check_func, self.check_type = self.type_to_check[type.__name__]
         except KeyError:
             raise NotImplemented(f"Not check function for type: {type}")
         self.range = range
@@ -20,7 +22,7 @@ class Arg():
             raise ValueError(f"Input value {val} is not in valid type({self.type})")
         if self.range is None:
             return
-        if (self.check_func is not None) and (not self.check_func(val)):
+        if (self.check_func is not None) and (not self.check_func(val, self.range)):
             raise ValueError(f"Input value {val} is not in a valid range.")
 
     @classmethod
@@ -34,9 +36,34 @@ Arg.register_type_check(float, lambda v, range: range[0] <= v <= range[1], True)
 Arg.register_type_check(bool, None, True)
 
 
+def parse_args_kwargs(args: tuple, kwargs: dict, signature: inspect.Signature):
+    """Get the pass in value of the func arguments according to it's signature."""
+    args = list(args)
+    kwargs = copy(kwargs)
+    res = {}
+    for n, p in signature.parameters.items():
+        has_default = p.default is not inspect._empty
+        if len(args) > 0:
+            res[n] = args.pop(0)
+        elif (len(kwargs) > 0) and (n in kwargs):
+            res[n] = kwargs.pop(n)
+        else:
+            if has_default:
+                res[n] = p.default
+            else:
+                raise ArgumentError(f"{n} is not provided and has no default value.")
+    return res
+
+
 def one(func):
     sig = inspect.signature(func)
     @functools.wraps(func)
     def func_(*args, **kwargs):
-        func(*args, **kwargs)
+        # check args
+        vals = parse_args_kwargs(args, kwargs, sig)
+        for n, p in sig.parameters.items():
+            ann = p.annotation
+            if isinstance(ann, Arg):
+                ann.check(vals[n])
+        return func(*args, **kwargs)
     return func_
