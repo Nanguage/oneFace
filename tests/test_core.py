@@ -20,6 +20,21 @@ def test_arg_check():
     with pytest.raises(ValueError):
         func(2, 10.0)
     func(2, 0.5)
+    @one
+    def func(a: Arg(bool)):
+        pass
+    with pytest.raises(ValueError):
+        func(1)
+
+
+def test_arg_register():
+    @one
+    def func(a: Arg(list, None)):
+        pass
+    with pytest.raises(NotImplementedError):
+        func([0,1])
+    Arg.register_type_check(list)
+    func([1,2,3])
 
 
 def test_parse_args_kwargs():
@@ -37,4 +52,5 @@ def test_parse_args_kwargs():
 
 
 if __name__ == "__main__":
-    test_arg_check()
+    #test_arg_check()
+    test_arg_register()
