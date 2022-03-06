@@ -3,6 +3,12 @@ from ctypes import ArgumentError
 import inspect
 import functools
 
+from rich.console import Console
+from rich.table import Table
+
+
+console = Console()
+
 
 class Arg():
 
@@ -27,7 +33,7 @@ class Arg():
             raise NotImplementedError(
                 f"Not checker registered for type: {type}")
         if self.is_check_type and (type(val) is not self.type):
-            raise ValueError(
+            raise TypeError(
                 f"Input value {val} is not in valid type({self.type})")
         if (self.range is not None) and (self.range_checker is not None):
             if (not self.range_checker(val, self.range)):
@@ -73,16 +79,59 @@ def parse_args_kwargs(args: tuple, kwargs: dict, signature: inspect.Signature):
     return res
 
 
-def one(func):
+def argument_table():
+    table = Table(show_header=True, header_style="bold magenta")
+    table.add_column("Argument")
+    table.add_column("Type")
+    table.add_column("Range")
+    table.add_column("InputVal")
+    table.add_column("InputType")
+    return table
+
+
+class ArgsCheckError(Exception):
+    pass
+
+
+def one(func=None, *, print_args=True):
+    if func is None:
+        return functools.partial(one, print_args=print_args)
     sig = inspect.signature(func)
 
     @functools.wraps(func)
     def func_(*args, **kwargs):
+        if print_args:
+            table = argument_table()
         # check args
         vals = parse_args_kwargs(args, kwargs, sig)
+        errors = []
         for n, p in sig.parameters.items():
             ann = p.annotation
             if isinstance(ann, Arg):
-                ann.check(vals[n])
+                val = vals[n]
+                val_str = str(val)
+                range_str = str(ann.range)
+                tp_str = str(type(val))
+                ann_tp_str = str(ann.type)
+                try:
+                    ann.check(val)
+                except Exception as e:
+                    errors.append(e)
+                    if isinstance(e, ValueError):
+                        val_str = f"[red]{val_str}[/red]"
+                        range_str = f"[red]{range_str}[/red]"
+                    elif isinstance(e, TypeError):
+                        ann_tp_str = f"[red]{ann_tp_str}[/red]"
+                        tp_str = f"[red]{tp_str}[/red]"
+                    else:
+                        raise e
+                if print_args:
+                    table.add_row(
+                        n, ann_tp_str, range_str, val_str, tp_str)
+        if print_args:
+            console.print(table)
+        if len(errors) > 0:
+            raise ArgsCheckError(errors)
         return func(*args, **kwargs)
+
     return func_
