@@ -35,6 +35,8 @@ def test_arg_register():
         func([0,1])
     Arg.register_type_check(list)
     func([1,2,3])
+    with pytest.raises(ValueError):
+        func(True)
 
 
 def test_parse_args_kwargs():

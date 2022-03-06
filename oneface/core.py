@@ -24,9 +24,11 @@ class Arg():
 
     def check(self, val):
         if (self.range_checker is None) and (not self.is_check_type):
-            raise NotImplementedError(f"Not checker registered for type: {type}")
+            raise NotImplementedError(
+                f"Not checker registered for type: {type}")
         if self.is_check_type and (type(val) is not self.type):
-            raise ValueError(f"Input value {val} is not in valid type({self.type})")
+            raise ValueError(
+                f"Input value {val} is not in valid type({self.type})")
         if (self.range is not None) and (self.range_checker is not None):
             if (not self.range_checker(val, self.range)):
                 raise ValueError(f"Input value {val} is not in a valid range.")
@@ -34,7 +36,7 @@ class Arg():
     @classmethod
     def register_range_check(cls, type, range_check_func):
         cls.type_to_range_checker[type.__name__] = range_check_func
-    
+
     @classmethod
     def register_type_check(cls, type):
         cls.check_type.add(type.__name__)
@@ -51,7 +53,8 @@ Arg.register_type_check(bool)
 
 
 def parse_args_kwargs(args: tuple, kwargs: dict, signature: inspect.Signature):
-    """Get the pass in value of the func arguments according to it's signature."""
+    """Get the pass in value of the func
+    arguments according to it's signature."""
     args = list(args)
     kwargs = copy(kwargs)
     res = {}
@@ -65,12 +68,14 @@ def parse_args_kwargs(args: tuple, kwargs: dict, signature: inspect.Signature):
             if has_default:
                 res[n] = p.default
             else:
-                raise ArgumentError(f"{n} is not provided and has no default value.")
+                raise ArgumentError(
+                    f"{n} is not provided and has no default value.")
     return res
 
 
 def one(func):
     sig = inspect.signature(func)
+
     @functools.wraps(func)
     def func_(*args, **kwargs):
         # check args
