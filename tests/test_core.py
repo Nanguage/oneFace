@@ -13,27 +13,27 @@ def test_arg_check():
     assert func(10, 0.3) == 10
     with pytest.raises(ArgsCheckError) as e:
         func(11, 0.3)
-        assert isinstance(e.args[0][0], ValueError)
+    assert isinstance(e.value.args[0][0], ValueError)
     with pytest.raises(ArgsCheckError) as e:
         func(2.0, 0.3)
-        assert isinstance(e.args[0][0], TypeError)
+    assert isinstance(e.value.args[0][0], TypeError)
     with pytest.raises(ArgsCheckError) as e:
         func("str", 0.3)
-        assert isinstance(e.args[0][0], TypeError)
+    assert isinstance(e.value.args[0][0], TypeError)
     with pytest.raises(ArgsCheckError) as e:
         func(2, 10.0)
-        assert isinstance(e.args[0][0], ValueError)
+    assert isinstance(e.value.args[0][0], ValueError)
     with pytest.raises(ArgsCheckError) as e:
         func(-1, 1)
-        assert isinstance(e.args[0][0], ValueError)
-        assert isinstance(e.args[0][1], TypeError)
+    assert isinstance(e.value.args[0][0], ValueError)
+    assert isinstance(e.value.args[0][1], TypeError)
     func(2, 0.5)
     @one(print_args=False)
     def func(a: Arg(bool)):
         pass
     with pytest.raises(ArgsCheckError) as e:
         func(1)
-        assert isinstance(e.args[0][0], TypeError)
+    assert isinstance(e.value.args[0][0], TypeError)
 
 
 def test_arg_register():
@@ -46,7 +46,7 @@ def test_arg_register():
     func([1,2,3])
     with pytest.raises(ArgsCheckError) as e:
         func(True)
-        assert isinstance(e.args[0][0], TypeError)
+    assert isinstance(e.value.args[0][0], TypeError)
 
 
 def test_print_args():
@@ -58,6 +58,26 @@ def test_print_args():
         func(-1, 1.0)
     with pytest.raises(ArgsCheckError) as e:
         func(0.1, 1)
+
+
+def test_class_method_arg_check():
+    class A():
+        def __init__(self, a):
+            self.a = a
+        
+        @one
+        def mth1(self, b: Arg(float, [0, 1])):
+            return self.a + b
+
+    a = A(10)
+    assert a.mth1(0.1) == 10.1
+    with pytest.raises(ArgsCheckError) as e:
+        a.mth1(10.0)
+    assert isinstance(e.value.args[0][0], ValueError)
+    with pytest.raises(ArgsCheckError) as e:
+        a.mth1(False)
+    assert isinstance(e.value.args[0][0], TypeError)
+        
 
 
 def test_parse_args_kwargs():
@@ -77,4 +97,5 @@ def test_parse_args_kwargs():
 if __name__ == "__main__":
     #test_arg_check()
     #test_arg_register()
-    test_print_args()
+    #test_print_args()
+    test_class_method_arg_check()

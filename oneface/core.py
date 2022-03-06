@@ -100,8 +100,7 @@ def one(func=None, *, print_args=True):
 
     @functools.wraps(func)
     def func_(*args, **kwargs):
-        if print_args:
-            table = argument_table()
+        table = argument_table()
         # check args
         vals = parse_args_kwargs(args, kwargs, sig)
         errors = []
@@ -125,13 +124,15 @@ def one(func=None, *, print_args=True):
                         tp_str = f"[red]{tp_str}[/red]"
                     else:
                         raise e
-                if print_args:
-                    table.add_row(
-                        n, ann_tp_str, range_str, val_str, tp_str)
+                table.add_row(n, ann_tp_str, range_str, val_str, tp_str)
         if print_args:
             console.print(table)
+            console.print()
         if len(errors) > 0:
             raise ArgsCheckError(errors)
         return func(*args, **kwargs)
+
+    import fire
+    func_.cli = lambda: fire.Fire(func_)
 
     return func_
