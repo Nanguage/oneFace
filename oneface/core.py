@@ -93,7 +93,7 @@ class ArgsCheckError(Exception):
     pass
 
 
-def one(func=None, *, print_args=True):
+def one(func=None, *, print_args=True, name=None):
     if func is None:
         return functools.partial(one, print_args=print_args)
     sig = inspect.signature(func)
@@ -125,7 +125,12 @@ def one(func=None, *, print_args=True):
                     else:
                         raise e
                 table.add_row(n, ann_tp_str, range_str, val_str, tp_str)
+
+        name_print = name if name is not None else func.__name__
+        if name_print:
+            console.rule(f"Run: [bold purple]{name_print}")
         if print_args:
+            console.print("Arguments table:")
             console.print(table)
             console.print()
         if len(errors) > 0:
