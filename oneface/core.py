@@ -80,16 +80,6 @@ def parse_args_kwargs(args: tuple, kwargs: dict, func: object):
     return res
 
 
-def argument_table():
-    table = Table(show_header=True, header_style="bold magenta")
-    table.add_column("Argument")
-    table.add_column("Type")
-    table.add_column("Range")
-    table.add_column("InputVal")
-    table.add_column("InputType")
-    return table
-
-
 class ArgsCheckError(Exception):
     pass
 
@@ -106,9 +96,10 @@ class One(object):
         functools.update_wrapper(self, func)
         self.name = name if name is not None else func.__name__
         self.print_args = print_args
-        self.table = argument_table()
+        self.table = None
 
     def __call__(self, *args, **kwargs):
+        self.table = self.get_argument_table()
         sig = inspect.signature(self.func)
         # check args
         vals = parse_args_kwargs(args, kwargs, self.func)
@@ -150,6 +141,16 @@ class One(object):
             else:
                 raise e
         self.table.add_row(name, ann_tp_str, range_str, val_str, tp_str)
+
+    @staticmethod
+    def get_argument_table():
+        table = Table(show_header=True, header_style="bold magenta")
+        table.add_column("Argument")
+        table.add_column("Type")
+        table.add_column("Range")
+        table.add_column("InputVal")
+        table.add_column("InputType")
+        return table
 
     def cli(self):
         from fire import Fire

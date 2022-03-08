@@ -1,6 +1,21 @@
 import functools
 import inspect
 from qtpy import QtWidgets
+from qtpy import QtCore
+
+
+class Worker(QtCore.QObject):
+    finished = QtCore.Signal()
+
+    def __init__(self, func, func_kwargs, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.func = func
+        self.func_kwargs = func_kwargs
+        self.result = None
+
+    def run(self):
+        self.result = self.func(**self.func_kwargs)
+        self.finished.emit()
 
 
 def gui(func=None, **kwargs):
@@ -13,8 +28,10 @@ class GUI():
 
     type_to_widget_constructor = {}
 
-    def __init__(self, func, name=None, size=None, open_terminal=False):
+    def __init__(self, func, name=None, size=None,
+                 run_once=True, open_terminal=False):
         self.func = func
+        self.run_once = run_once
         self.open_terminal = open_terminal
         self.result = None
         self.app = QtWidgets.QApplication([])
@@ -24,18 +41,18 @@ class GUI():
         if size:
             self.main_window.setFixedSize(*size)
         self.arg_widgets = {}
+        self.window = QtWidgets.QWidget()
+        self.layout = QtWidgets.QVBoxLayout()
         self.compose_ui()
         self.connect_events()
 
     def compose_ui(self):
-        self.window = window = QtWidgets.QWidget()
-        self.layout = layout = QtWidgets.QVBoxLayout()
-        self.compose_arg_widgets(layout)
+        self.compose_arg_widgets(self.layout)
         self.run_btn = QtWidgets.QPushButton("Run")
-        layout.addWidget(self.run_btn)
+        self.layout.addWidget(self.run_btn)
         self.terminal = QtWidgets.QTextEdit()
-        window.setLayout(layout)
-        self.main_window.setCentralWidget(window)
+        self.window.setLayout(self.layout)
+        self.main_window.setCentralWidget(self.window)
 
     def compose_arg_widgets(self, layout):
         from oneface.core import Arg
@@ -62,11 +79,26 @@ class GUI():
         return kwargs
 
     def run_func(self):
-        if not self.open_terminal:
+        kwargs = self.get_args()
+        if self.run_once:
             self.main_window.hide()
-            kwargs = self.get_args()
             self.result = self.func(**kwargs)
             self.main_window.close()
+        else:
+            thread = self.thread = QtCore.QThread()
+            worker = self.worker = Worker(self.func, kwargs)
+            worker.moveToThread(thread)
+            thread.started.connect(worker.run)
+            worker.finished.connect(thread.quit)
+            worker.finished.connect(worker.deleteLater)
+            thread.finished.connect(thread.deleteLater)
+            thread.start()
+            self.main_window.hide()
+
+            def finish():
+                self.result = worker.result
+                self.main_window.show()
+            thread.finished.connect(finish)
 
     def __call__(self):
         self.main_window.show()
@@ -137,7 +169,7 @@ if __name__ == "__main__":
     from oneface.core import one, Arg
     import time
 
-    @gui(name="Test")
+    @gui(name="Test", open_terminal=True, run_once=False)
     @one
     def func(a: Arg(int, [0, 10]),
              b: Arg(float, [0, 1]),
