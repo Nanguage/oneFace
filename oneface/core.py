@@ -2,6 +2,7 @@ from copy import copy
 from ctypes import ArgumentError
 import inspect
 import functools
+import types
 
 from rich.console import Console
 from rich.table import Table
@@ -58,13 +59,14 @@ Arg.register_type_check(float)
 Arg.register_type_check(bool)
 
 
-def parse_args_kwargs(args: tuple, kwargs: dict, signature: inspect.Signature):
+def parse_args_kwargs(args: tuple, kwargs: dict, func: object):
     """Get the pass in value of the func
     arguments according to it's signature."""
     args = list(args)
     kwargs = copy(kwargs)
     res = {}
-    for n, p in signature.parameters.items():
+    sig = inspect.signature(func)
+    for n, p in sig.parameters.items():
         has_default = p.default is not inspect._empty
         if len(args) > 0:
             res[n] = args.pop(0)
@@ -93,51 +95,63 @@ class ArgsCheckError(Exception):
     pass
 
 
-def one(func=None, *, print_args=True, name=None):
+def one(func=None, **kwargs):
     if func is None:
-        return functools.partial(one, print_args=print_args)
-    sig = inspect.signature(func)
+        return functools.partial(one, **kwargs)
+    return One(func, **kwargs)
 
-    @functools.wraps(func)
-    def func_(*args, **kwargs):
-        table = argument_table()
+
+class One(object):
+    def __init__(self, func, print_args=True, name=None):
+        self.func = func
+        functools.update_wrapper(self, func)
+        self.name = name if name is not None else func.__name__
+        self.print_args = print_args
+        self.table = argument_table()
+
+    def __call__(self, *args, **kwargs):
+        sig = inspect.signature(self.func)
         # check args
-        vals = parse_args_kwargs(args, kwargs, sig)
+        vals = parse_args_kwargs(args, kwargs, self.func)
         errors = []
         for n, p in sig.parameters.items():
-            ann = p.annotation
-            if isinstance(ann, Arg):
-                val = vals[n]
-                val_str = str(val)
-                range_str = str(ann.range)
-                tp_str = str(type(val))
-                ann_tp_str = str(ann.type)
-                try:
-                    ann.check(val)
-                except Exception as e:
-                    errors.append(e)
-                    if isinstance(e, ValueError):
-                        val_str = f"[red]{val_str}[/red]"
-                        range_str = f"[red]{range_str}[/red]"
-                    elif isinstance(e, TypeError):
-                        ann_tp_str = f"[red]{ann_tp_str}[/red]"
-                        tp_str = f"[red]{tp_str}[/red]"
-                    else:
-                        raise e
-                table.add_row(n, ann_tp_str, range_str, val_str, tp_str)
-
-        name_print = name if name is not None else func.__name__
-        if name_print:
-            console.rule(f"Run: [bold purple]{name_print}")
-        if print_args:
+            self._check_arg(n, p.annotation, vals[n], errors)
+        if self.name:
+            console.rule(f"Run: [bold purple]{self.name}")
+        if self.print_args:
             console.print("Arguments table:")
-            console.print(table)
+            console.print(self.table)
             console.print()
         if len(errors) > 0:
             raise ArgsCheckError(errors)
-        return func(*args, **kwargs)
+        return self.func(*args, **kwargs)
 
-    import fire
-    func_.cli = lambda: fire.Fire(func_)
+    def __get__(self, obj, objtype):
+        """Support instance method
+        see https://stackoverflow.com/a/3296318/8500469"""
+        return functools.partial(self.__call__, obj)
 
-    return func_
+    def _check_arg(self, name, ann, val, errors):
+        if not isinstance(ann, Arg):
+            return
+        val_str = str(val)
+        range_str = str(ann.range)
+        tp_str = str(type(val))
+        ann_tp_str = str(ann.type)
+        try:
+            ann.check(val)
+        except Exception as e:
+            errors.append(e)
+            if isinstance(e, ValueError):
+                val_str = f"[red]{val_str}[/red]"
+                range_str = f"[red]{range_str}[/red]"
+            elif isinstance(e, TypeError):
+                ann_tp_str = f"[red]{ann_tp_str}[/red]"
+                tp_str = f"[red]{tp_str}[/red]"
+            else:
+                raise e
+        self.table.add_row(name, ann_tp_str, range_str, val_str, tp_str)
+
+    def cli(self):
+        from fire import Fire
+        Fire(self.__call__)

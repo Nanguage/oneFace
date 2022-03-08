@@ -81,15 +81,22 @@ def test_class_method_arg_check():
 def test_parse_args_kwargs():
     def f1(a, b, c=1, d=2):
         pass
-    sig = inspect.signature(f1)
-    args = parse_args_kwargs((1, 2), {'d': 10}, sig)
+    args = parse_args_kwargs((1, 2), {'d': 10}, f1)
     assert (args['a'] == 1) and (args['b'] == 2) and (args['c'] == 1) and (args['d'] == 10)
-    args = parse_args_kwargs((1, 2, 3), {}, sig)
+    args = parse_args_kwargs((1, 2, 3), {}, f1)
     assert (args['a'] == 1) and (args['b'] == 2) and (args['c'] == 3) and (args['d'] == 2)
     with pytest.raises(ArgumentError):
-        args = parse_args_kwargs((1,), {}, sig)
-    args = parse_args_kwargs([], {'a':1, 'b':2}, sig)
+        args = parse_args_kwargs((1,), {}, f1)
+    args = parse_args_kwargs([], {'a':1, 'b':2}, f1)
     assert (args['a'] == 1) and (args['b'] == 2) and (args['c'] == 1) and (args['d'] == 2)
+
+
+def test_docstring():
+    @one
+    def func1():
+        "test"
+        pass
+    assert func1.__doc__ == "test"
 
 
 if __name__ == "__main__":
