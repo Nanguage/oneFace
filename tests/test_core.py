@@ -1,6 +1,4 @@
 import inspect
-import sys
-sys.path.insert(0, "./")
 from oneface.core import *
 
 import pytest
