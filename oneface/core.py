@@ -2,7 +2,6 @@ from copy import copy
 from ctypes import ArgumentError
 import inspect
 import functools
-import types
 
 from rich.console import Console
 from rich.table import Table

@@ -1,21 +1,6 @@
 import functools
 import inspect
-from PyQt6 import QtWidgets
-from PyQt6 import QtCore
-
-
-class Worker(QtCore.QObject):
-    finished = QtCore.pyqtSignal()
-
-    def __init__(self, func, func_kwargs, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.func = func
-        self.func_kwargs = func_kwargs
-        self.result = None
-
-    def run(self):
-        self.result = self.func(**self.func_kwargs)
-        self.finished.emit()
+from qtpy import QtWidgets
 
 
 def gui(func=None, **kwargs):
