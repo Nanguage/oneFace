@@ -155,3 +155,7 @@ class One(object):
     def cli(self):
         from fire import Fire
         Fire(self.__call__)
+
+    def qt_gui(self, **kwargs):
+        from .qt import GUI
+        return GUI(self, **kwargs)()
