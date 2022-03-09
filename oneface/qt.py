@@ -93,11 +93,11 @@ class GUI():
             worker.finished.connect(worker.deleteLater)
             thread.finished.connect(thread.deleteLater)
             thread.start()
-            self.main_window.hide()
+            self.run_btn.setEnabled(False)
 
             def finish():
                 self.result = worker.result
-                self.main_window.show()
+                self.run_btn.setEnabled(True)
             thread.finished.connect(finish)
 
     def __call__(self):
