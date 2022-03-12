@@ -28,23 +28,11 @@ class App(object):
         self.dash_app = self.get_dash_app()
 
     def get_layout(self):
-        from oneface.core import Arg
-        sig = inspect.signature(self.func)
-        input_widgets = []
-        input_names = []
-        input_types = []
-        for n, p in sig.parameters.items():
-            ann = p.annotation
-            if not isinstance(ann, Arg):
-                continue
-            constructor = self.type_to_widget_constructor[ann.type.__name__]
-            input_widgets.append(constructor(n, ann.range))
-            input_names.append(n)
-            input_types.append(ann.type)
-        self.input_names = input_names
-        self.input_types = input_types
+        widgets, names, types = self.parse_args()
+        self.input_names = names
+        self.input_types = types
         layout = html.Div(children=[
-            *input_widgets,
+            *widgets,
             html.Br(),
             html.Button("Run", id="run-btn"),
             html.Br(),
@@ -56,6 +44,20 @@ class App(object):
             'margin': "auto",
         })
         return layout
+
+    def parse_args(self):
+        from oneface.core import Arg
+        sig = inspect.signature(self.func)
+        widgets, names, types = [], [], []
+        for n, p in sig.parameters.items():
+            ann = p.annotation
+            if not isinstance(ann, Arg):
+                continue
+            constructor = self.type_to_widget_constructor[ann.type.__name__]
+            widgets.append(constructor(n, ann.range))
+            names.append(n)
+            types.append(ann.type)
+        return widgets, names, types
 
     def get_run_callback_decorator(self, app):
         inputs = [Input("run-btn", 'n_clicks')]
