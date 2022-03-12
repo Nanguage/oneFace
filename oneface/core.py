@@ -107,9 +107,9 @@ class One(object):
         for n, p in sig.parameters.items():
             self._check_arg(n, p.annotation, vals[n], errors)
         if self.name:
-            console.rule(f"Run: [bold purple]{self.name}")
+            console.print(f"Run: [bold purple]{self.name}")
         if self.print_args:
-            console.print("Arguments table:")
+            console.print("Arguments table:\n")
             console.print(self.table)
             console.print()
         if len(errors) > 0:
@@ -144,7 +144,9 @@ class One(object):
 
     @staticmethod
     def get_argument_table():
-        table = Table(show_header=True, header_style="bold magenta")
+        table = Table(
+            show_header=True, header_style="bold magenta",
+            box=None)
         table.add_column("Argument")
         table.add_column("Type")
         table.add_column("Range")

@@ -6,6 +6,7 @@ import os.path as osp
 from dash import Dash, dcc, html, Input, Output, State
 from dash.exceptions import PreventUpdate
 from ansi2html import Ansi2HTMLConverter
+import visdcc
 
 
 HERE = osp.abspath(osp.dirname(__file__))
@@ -21,10 +22,11 @@ class App(object):
     type_to_widget_constructor = {}
     convert_types = {}
 
-    def __init__(self, func, name=None, debug=True):
+    def __init__(self, func, name=None, debug=True, conosole_interval=2000):
         self.func = func
         self.name = name
         self.debug = debug
+        self.console_interval = conosole_interval
         self.input_names = None
         self.input_types = None
         self.result = None
@@ -44,10 +46,16 @@ class App(object):
             html.Div("", style={"height": "20px"}),
             dcc.Interval(
                 id="console-interval",
-                interval=1000, n_intervals=0),
-            html.Iframe(id="console-out", style={"width": "100%"}),
+                interval=self.console_interval, n_intervals=0),
+            html.Iframe(id="console-out", style={
+                "width": "100%",
+                "max-width": "100%",
+                "height": "400px",
+                "resize": "both"
+            }),
             html.H3("Result"),
-            html.Div("", id="out")
+            html.Div("", id="out"),
+            visdcc.Run_js(id="jsscroll", run="")
         ], style={
             'width': "60%",
             'min-width': "400px",
@@ -94,7 +102,8 @@ class App(object):
                 tp_name = input_type.__name__
                 if tp_name in self.convert_types:
                     kwargs[k] = self.convert_types[tp_name](v)
-            with contextlib.redirect_stdout(console_buffer):
+            with contextlib.redirect_stdout(console_buffer), \
+                 contextlib.redirect_stderr(console_buffer):
                 self.result = self.func(**kwargs)
             return self.result
 
@@ -105,7 +114,26 @@ class App(object):
             conv = Ansi2HTMLConverter()
             console_buffer.seek(0)
             lines = console_buffer.readlines()
-            return conv.convert("".join(lines))
+            html_ = conv.convert("".join(lines))
+            return html_
+
+        doc_cache = None
+
+        @app.callback(
+            Output('jsscroll', 'run'),
+            Input('console-out', 'srcDoc'))
+        def scroll(doc):
+            scroll_cmd = """
+            var out = document.getElementById('console-out');
+            out.contentWindow.scrollTo(0, 999999999);
+            """
+            nonlocal doc_cache
+            if doc == doc_cache:
+                cmd = ""
+            else:
+                cmd = scroll_cmd
+            doc_cache = doc
+            return cmd
 
         return app
 
@@ -160,6 +188,12 @@ if __name__ == "__main__":
              b: Arg(float, [0, 10]),
              c: Arg(str, ["a", "b", "c"])):  # noqa
         print(c)
+        import time
+        for i in range(10):
+            time.sleep(1)
+            print(f"{i}")
+            sys.stderr.write("iii")
+            sys.stderr.flush()
         return a + b
 
     func()
