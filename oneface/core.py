@@ -161,3 +161,7 @@ class One(object):
     def qt_gui(self, **kwargs):
         from .qt import GUI
         return GUI(self, **kwargs)()
+
+    def dash_app(self, **kwargs):
+        from .dash_app import App
+        return App(self, **kwargs)()
