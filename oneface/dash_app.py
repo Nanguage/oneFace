@@ -1,8 +1,11 @@
+import contextlib
 import functools
 import inspect
+from io import StringIO
 import os.path as osp
 from dash import Dash, dcc, html, Input, Output, State
 from dash.exceptions import PreventUpdate
+from ansi2html import Ansi2HTMLConverter
 
 
 HERE = osp.abspath(osp.dirname(__file__))
@@ -32,11 +35,19 @@ class App(object):
         self.input_names = names
         self.input_types = types
         layout = html.Div(children=[
+            html.H3("Arguments"),
             *widgets,
             html.Br(),
             html.Button("Run", id="run-btn"),
-            html.Br(),
-            html.Div(id="out", children=""),
+            html.Div("", style={"height": "20px"}),
+            html.H3("Console"),
+            html.Div("", style={"height": "20px"}),
+            dcc.Interval(
+                id="console-interval",
+                interval=1000, n_intervals=0),
+            html.Iframe(id="console-out", style={"width": "100%"}),
+            html.H3("Result"),
+            html.Div("", id="out")
         ], style={
             'width': "60%",
             'min-width': "400px",
@@ -71,6 +82,7 @@ class App(object):
         css = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
         app = Dash(name, external_stylesheets=css)
         app.layout = self.get_layout()
+        console_buffer = StringIO()
 
         @self.get_run_callback_decorator(app)
         def run(n_clicks, *args):
@@ -82,7 +94,19 @@ class App(object):
                 tp_name = input_type.__name__
                 if tp_name in self.convert_types:
                     kwargs[k] = self.convert_types[tp_name](v)
-            self.result = self.func(**kwargs)
+            with contextlib.redirect_stdout(console_buffer):
+                self.result = self.func(**kwargs)
+            return self.result
+
+        @app.callback(
+            Output("console-out", "srcDoc"),
+            Input("console-interval", "n_intervals"))
+        def update_console(n):
+            conv = Ansi2HTMLConverter()
+            console_buffer.seek(0)
+            lines = console_buffer.readlines()
+            return conv.convert("".join(lines))
+
         return app
 
     @classmethod
