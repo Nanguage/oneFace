@@ -1,7 +1,8 @@
 import functools
 import inspect
 import os.path as osp
-from dash import Dash, dcc, html, Input, Output
+from dash import Dash, dcc, html, Input, Output, State
+from dash.exceptions import PreventUpdate
 
 
 HERE = osp.abspath(osp.dirname(__file__))
@@ -15,6 +16,7 @@ def app(func=None, **kwargs):
 
 class App(object):
     type_to_widget_constructor = {}
+    convert_types = {}
 
     def __init__(self, func, name=None, debug=True):
         self.func = func
@@ -22,6 +24,7 @@ class App(object):
         self.debug = debug
         self.input_names = None
         self.input_types = None
+        self.result = None
         self.dash_app = self.get_dash_app()
 
     def get_layout(self):
@@ -43,9 +46,9 @@ class App(object):
         layout = html.Div(children=[
             *input_widgets,
             html.Br(),
-            html.Button("Run", n_clicks=0, id="run-btn"),
+            html.Button("Run", id="run-btn"),
             html.Br(),
-            html.Div(id="out", children="")
+            html.Div(id="out", children=""),
         ], style={
             'width': "60%",
             'min-width': "400px",
@@ -54,9 +57,9 @@ class App(object):
         })
         return layout
 
-    def get_callback_decorator(self, app):
+    def get_run_callback_decorator(self, app):
         inputs = [Input("run-btn", 'n_clicks')]
-        inputs += [Input(f"input-{n}", "value") for n in self.input_names]
+        inputs += [State(f"input-{n}", "value") for n in self.input_names]
         output = Output("out", "children")
         deco = app.callback(output, *inputs)
         return deco
@@ -67,20 +70,28 @@ class App(object):
         app = Dash(name, external_stylesheets=css)
         app.layout = self.get_layout()
 
-        @self.get_callback_decorator(app)
-        def run(*args):
-            print(args)
-            kwargs = dict(zip(self.input_names, args[1:]))
-            kwargs = {
-                k: self.input_types[i](v)
-                for i, (k, v) in enumerate(kwargs.items())
-            }
-            self.func(**kwargs)
+        @self.get_run_callback_decorator(app)
+        def run(n_clicks, *args):
+            if n_clicks is None:
+                raise PreventUpdate
+            kwargs = dict(zip(self.input_names, args))
+            for i, (k, v) in enumerate(kwargs.items()):
+                input_type = self.input_types[i]
+                tp_name = input_type.__name__
+                if tp_name in self.convert_types:
+                    kwargs[k] = self.convert_types[tp_name](v)
+            self.result = self.func(**kwargs)
         return app
 
     @classmethod
     def register_widget(cls, type, widget_constructor):
         cls.type_to_widget_constructor[type.__name__] = widget_constructor
+
+    @classmethod
+    def register_type_convert(cls, type, converter=None):
+        if converter is None:
+            converter = type
+        cls.convert_types[type.__name__] = converter
 
     def __call__(self):
         self.dash_app.run_server(debug=self.debug)
@@ -108,6 +119,7 @@ App.register_widget(
 App.register_widget(
     float,
     functools.partial(number_input_widget, step=None))
+App.register_type_convert(float)
 App.register_widget(str, dropdown_widget)
 
 
@@ -121,6 +133,7 @@ if __name__ == "__main__":
     def func(a: Arg(int, [0, 10]),
              b: Arg(float, [0, 10]),
              c: Arg(str, ["a", "b", "c"])):  # noqa
+        print(c)
         return a + b
 
     func()
