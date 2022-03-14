@@ -36,11 +36,16 @@ def get_long_description():
 
 
 def get_install_requires():
-    requirements = []
-    with open('requirements.txt') as f:
-        for line in f:
-            requirements.append(line.strip())
+    requirements = [
+        "rich",
+        "fire",
+        "qtpy",
+    ]
     return requirements
+
+
+requires_test = ['pytest', 'pytest-cov', 'flake8']
+requires_dash = ['ansi2html', 'dash', 'visdcc']
 
 
 setup(
@@ -59,5 +64,15 @@ setup(
     zip_safe=False,
     classifiers=classifiers,
     install_requires=get_install_requires(),
+    extras_require={
+        'test': requires_test,
+        'dash': requires_dash,
+        'qt': ['pyqt6'],
+        'pyqt5': ['pyqt5'],
+        'pyqt6': ['pyqt6'],
+        'pyside2': ['PySide2'],
+        'pyside6': ['PySide6'],
+        'all': ['pyqt6'] + requires_dash,
+    },
     python_requires='>=3.7, <4',
 )
