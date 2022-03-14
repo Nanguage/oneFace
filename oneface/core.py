@@ -13,7 +13,7 @@ console = Console()
 class Arg():
 
     type_to_range_checker = {}
-    check_type = set()
+    type_to_type_checker = {}
 
     def __init__(self, type=str, range=None, **kwargs):
         self.type = type
@@ -21,35 +21,36 @@ class Arg():
         self.kwargs = kwargs
 
     @property
-    def is_check_type(self):
-        return self.type.__name__ in self.check_type
+    def type_checker(self):
+        return self.type_to_type_checker.get(self.type.__name__, None)
 
     @property
     def range_checker(self):
         return self.type_to_range_checker.get(self.type.__name__, None)
 
     def check(self, val):
-        if (self.range_checker is None) and (not self.is_check_type):
+        if (self.range_checker is None) and (self.type_checker is None):
             raise NotImplementedError(
                 f"Not checker registered for type: {type}")
-        if self.is_check_type and (type(val) is not self.type):
-            raise TypeError(
-                f"Input value {val} is not in valid type({self.type})")
-        if (self.range is not None) and (self.range_checker is not None):
+        if self.type_checker is not None:
+            if not self.type_checker(val, self.type):
+                raise TypeError(
+                    f"Input value {val} is not in valid type({self.type})")
+        if self.range_checker is not None:
             if (not self.range_checker(val, self.range)):
                 raise ValueError(f"Input value {val} is not in a valid range.")
 
     @classmethod
-    def register_range_check(cls, type, range_check_func):
-        cls.type_to_range_checker[type.__name__] = range_check_func
+    def register_range_check(cls, type, checker):
+        cls.type_to_range_checker[type.__name__] = checker
 
     @classmethod
-    def register_type_check(cls, type):
-        cls.check_type.add(type.__name__)
+    def register_type_check(cls, type, checker=None):
+        checker = checker or (lambda v, t: isinstance(v, t))
+        cls.type_to_type_checker[type.__name__] = checker
 
 
 # register basic types
-Arg.register_range_check(str, lambda v, range: v in range)
 Arg.register_type_check(str)
 Arg.register_range_check(int, lambda v, range: range[0] <= v <= range[1])
 Arg.register_type_check(int)
