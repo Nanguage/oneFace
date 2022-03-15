@@ -173,6 +173,22 @@ class StrInputItem(InputItem):
         return self.input.text()
 
 
+class BoolInputItem(InputItem):
+    def init_ui(self):
+        super().init_ui(label_stretch=2)
+        self.bt = QtWidgets.QRadioButton("True")
+        self.bf = QtWidgets.QRadioButton("False")
+        self.layout.addWidget(self.bt, stretch=1)
+        self.layout.addWidget(self.bf, stretch=1)
+        if (self.default is False):
+            self.bf.setChecked(True)
+        else:
+            self.bt.setChecked(True)
+
+    def get_value(self):
+        return self.bt.isChecked()
+
+
 class SelectionInputItem(InputItem):
     def init_ui(self):
         super().init_ui()
@@ -247,6 +263,7 @@ class OutPathInputItem(PathInputItem):
 GUI.register_widget(int, IntInputItem)
 GUI.register_widget(float, FloatInputItem)
 GUI.register_widget(str, StrInputItem)
+GUI.register_widget(bool, BoolInputItem)
 GUI.register_widget(Selection, SelectionInputItem)
 GUI.register_widget(SubSet, SubsetInputItem)
 GUI.register_widget(InputPath, PathInputItem)

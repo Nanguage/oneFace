@@ -57,6 +57,20 @@ def test_str_input():
     assert func.result == ""
 
 
+def test_bool_input():
+    @gui
+    @one
+    def func(a: Arg(bool), b: Arg(bool) = False):
+        return a, b
+    
+    assert isinstance(func, GUI)
+    kwargs = func.get_args()
+    assert kwargs['a'] == True
+    assert kwargs['b'] == False
+    func.run_func()
+    assert func.result == (True, False)
+
+
 def test_selection_input():
     @gui
     @one
