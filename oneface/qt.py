@@ -3,6 +3,8 @@ import inspect
 from qtpy import QtWidgets
 from qtpy import QtCore
 
+from oneface.types import (Selection, SubSet)
+
 
 class Worker(QtCore.QObject):
     finished = QtCore.Signal()
@@ -117,12 +119,19 @@ class InputItem(QtWidgets.QWidget):
         self.name = name
         self.range = range
         self.default = default
-        self.layout = QtWidgets.QHBoxLayout()
+        self.init_layout()
         self.init_ui()
         self.setLayout(self.layout)
 
-    def init_ui(self):
-        self.layout.addWidget(QtWidgets.QLabel(f"{self.name}:"))
+    def init_layout(self):
+        self.layout = QtWidgets.QHBoxLayout()
+
+    def init_ui(self, label_stretch=1):
+        if label_stretch:
+            self.layout.addWidget(
+                QtWidgets.QLabel(f"{self.name}:"), stretch=label_stretch)
+        else:
+            self.layout.addWidget(QtWidgets.QLabel(f"{self.name}:"))
 
     def get_value(self):
         return self.input.value()
@@ -137,7 +146,7 @@ class IntInputItem(InputItem):
             self.input.setMaximum(self.range[1])
         if self.default:
             self.input.setValue(self.default)
-        self.layout.addWidget(self.input)
+        self.layout.addWidget(self.input, stretch=1)
 
 
 class FloatInputItem(InputItem):
@@ -149,41 +158,62 @@ class FloatInputItem(InputItem):
             self.input.setMaximum(self.range[1])
         if self.default:
             self.input.setValue(self.default)
-        self.layout.addWidget(self.input)
+        self.layout.addWidget(self.input, stretch=1)
 
 
 class StrInputItem(InputItem):
     def init_ui(self):
         super().init_ui()
+        self.input = QtWidgets.QLineEdit()
+        if self.default:
+            self.input.setText(self.default)
+        self.layout.addWidget(self.input, stretch=1)
+
+    def get_value(self):
+        return self.input.text()
+
+
+class SelectionInputItem(InputItem):
+    def init_ui(self):
+        super().init_ui()
         self.input = QtWidgets.QComboBox()
         if self.range:
             self.input.addItems(self.range)
-        self.layout.addWidget(self.input)
+        if self.default:
+            self.input.setCurrentText(self.default)
+        self.layout.addWidget(self.input, stretch=1)
 
     def get_value(self):
         return self.input.currentText()
 
 
+class SubsetInputItem(InputItem):
+    def init_layout(self):
+        self.layout = QtWidgets.QVBoxLayout()
+
+    def init_ui(self):
+        super().init_ui(label_stretch=None)
+        self.cb_layout = QtWidgets.QHBoxLayout()
+        self.cbs = []
+        for it in self.range:
+            cb = QtWidgets.QCheckBox(it)
+            self.cb_layout.addWidget(cb)
+            self.cbs.append(cb)
+        self.layout.addLayout(self.cb_layout)
+        if self.default:
+            for val in self.default:
+                self.cbs[self.range.index(val)].setChecked(True)
+
+    def get_value(self):
+        res = []
+        for i, val in enumerate(self.range):
+            if self.cbs[i].isChecked():
+                res.append(val)
+        return res
+
+
 GUI.register_widget(int, IntInputItem)
 GUI.register_widget(float, FloatInputItem)
 GUI.register_widget(str, StrInputItem)
-
-
-if __name__ == "__main__":
-    import sys
-    sys.path.insert(0, "./")
-    from oneface.core import one, Arg
-    import time
-
-    @gui(name="Test", open_terminal=True, run_once=False)
-    @one
-    def func(a: Arg(int, [0, 10]),
-             b: Arg(float, [0, 1]),
-             c: Arg(str, ["a", "b", "c"])):  # noqa: F821
-        for i in range(3):
-            time.sleep(1)
-            print(f"wait {i}")
-        print(c)
-        return a+b
-
-    print(func())
+GUI.register_widget(Selection, SelectionInputItem)
+GUI.register_widget(SubSet, SubsetInputItem)
