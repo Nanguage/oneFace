@@ -223,6 +223,8 @@ class PathInputItem(InputItem):
         self.dialog_open = QtWidgets.QPushButton("open")
         self.dialog_open.clicked.connect(self.get_path)
         self.box.addWidget(self.path_edit, stretch=2)
+        if self.default:
+            self.path_edit.setText(self.default)
         self.box.addWidget(self.dialog_open, stretch=1)
         self.layout.addLayout(self.box)
 

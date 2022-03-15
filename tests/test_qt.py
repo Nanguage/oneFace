@@ -1,5 +1,8 @@
+import sys; sys.path.insert(0, "./")
 from oneface.core import *
 from oneface.qt import *
+
+import pytest
 
 
 def test_int_input():
@@ -78,3 +81,17 @@ def test_subset_input():
     assert kwargs['a'] == ["a"]
     func.run_func()
     assert func.result == ["a"]
+
+
+def test_inputpath_input():
+    @gui
+    @one
+    def func(a: Arg(InputPath) = "a"):
+        return a
+    
+    assert isinstance(func, GUI)
+    kwargs = func.get_args()
+    assert kwargs['a'] == "a"
+    with pytest.raises(ArgsCheckError) as e:
+        func.run_func()
+    assert isinstance(e.value.args[0][0], ValueError)
