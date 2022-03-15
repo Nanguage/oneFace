@@ -73,7 +73,8 @@ class App(object):
             if not isinstance(ann, Arg):
                 continue
             constructor = self.type_to_widget_constructor[ann.type.__name__]
-            widgets.append(constructor(n, ann.range))
+            default = None if p.default is inspect._empty else p.default
+            widgets.append(constructor(n, ann.range, default))
             names.append(n)
             types.append(ann.type)
         return widgets, names, types
@@ -151,19 +152,19 @@ class App(object):
         self.dash_app.run_server(debug=self.debug)
 
 
-def number_input_widget(name, range, step=None):
+def number_input_widget(name, range, default=None, step=None):
     return html.Div([
         f"{name}: ",
         dcc.Slider(
             range[0], range[1], step,
-            id=f"input-{name}", value=range[0])
+            id=f"input-{name}", value=(default or range[0]))
     ])
 
 
-def dropdown_widget(name, range):
+def dropdown_widget(name, range, default=None):
     return html.Div([
         f"{name}: ",
-        dcc.Dropdown(range, id=f"input-{name}", value=range[0])
+        dcc.Dropdown(range, id=f"input-{name}", value=(default or range[0]))
     ])
 
 
