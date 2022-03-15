@@ -36,7 +36,14 @@ class InputPath(ArgType):
         return path.exists()
 
 
+class OutputPath(ArgType):
+    @staticmethod
+    def check_type(val, type_):
+        return isinstance(val, str) or isinstance(val, Path)
+
+
 Arg.register_range_check(Selection, Selection.check_range)
 Arg.register_range_check(SubSet, SubSet.check_range)
 Arg.register_type_check(InputPath, InputPath.check_type)
 Arg.register_range_check(InputPath, InputPath.check_range)
+Arg.register_type_check(OutputPath, OutputPath.check_type)

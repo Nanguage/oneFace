@@ -3,7 +3,7 @@ import inspect
 from qtpy import QtWidgets
 from qtpy import QtCore
 
-from oneface.types import (Selection, SubSet)
+from oneface.types import (InputPath, OutputPath, Selection, SubSet)
 
 
 class Worker(QtCore.QObject):
@@ -212,8 +212,40 @@ class SubsetInputItem(InputItem):
         return res
 
 
+class PathInputItem(InputItem):
+    def init_layout(self):
+        self.layout = QtWidgets.QVBoxLayout()
+
+    def init_ui(self):
+        super().init_ui(label_stretch=None)
+        self.box = QtWidgets.QHBoxLayout()
+        self.path_edit = QtWidgets.QLineEdit()
+        self.dialog_open = QtWidgets.QPushButton("open")
+        self.dialog_open.clicked.connect(self.get_path)
+        self.box.addWidget(self.path_edit, stretch=2)
+        self.box.addWidget(self.dialog_open, stretch=1)
+        self.layout.addLayout(self.box)
+
+    def get_path(self):
+        fname, _ = QtWidgets.QFileDialog.getOpenFileName(
+            None, "Open file", "", "All files (*)")
+        self.path_edit.setText(fname)
+
+    def get_value(self):
+        return self.path_edit.text()
+
+
+class OutPathInputItem(PathInputItem):
+    def get_path(self):
+        fname, _ = QtWidgets.QFileDialog.getSaveFileName(
+            None, "Save file", "", "All files (*)")
+        self.path_edit.setText(fname)
+
+
 GUI.register_widget(int, IntInputItem)
 GUI.register_widget(float, FloatInputItem)
 GUI.register_widget(str, StrInputItem)
 GUI.register_widget(Selection, SelectionInputItem)
 GUI.register_widget(SubSet, SubsetInputItem)
+GUI.register_widget(InputPath, PathInputItem)
+GUI.register_widget(OutputPath, OutPathInputItem)

@@ -43,3 +43,15 @@ def test_inputpath():
     with pytest.raises(ArgsCheckError) as e:
         func1("not/exists/file")
     assert isinstance(e.value.args[0][0], ValueError)
+
+
+def test_outputpath():
+    @one
+    def func1(s: Arg(OutputPath)):
+        print(s)
+        return s
+
+    assert func1(__file__) == __file__
+    with pytest.raises(ArgsCheckError) as e:
+        func1(1)
+    assert isinstance(e.value.args[0][0], TypeError)

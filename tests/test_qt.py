@@ -52,3 +52,29 @@ def test_str_input():
     assert kwargs['a'] == ""
     func.run_func()
     assert func.result == ""
+
+
+def test_selection_input():
+    @gui
+    @one
+    def func(a: Arg(Selection, ["a", "b"]) = "a"):
+        return a
+    
+    assert isinstance(func, GUI)
+    kwargs = func.get_args()
+    assert kwargs['a'] == "a"
+    func.run_func()
+    assert func.result == "a"
+
+
+def test_subset_input():
+    @gui
+    @one
+    def func(a: Arg(SubSet, ["a", "b"]) = ["a"]):
+        return a
+    
+    assert isinstance(func, GUI)
+    kwargs = func.get_args()
+    assert kwargs['a'] == ["a"]
+    func.run_func()
+    assert func.result == ["a"]
