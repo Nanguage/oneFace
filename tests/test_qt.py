@@ -31,6 +31,15 @@ def test_int_with_default():
     assert func.result == 1
 
 
+def test_set_text():
+    @gui
+    @one
+    def func(a: Arg(int, [0, 10], text="text a")):
+        return a
+    
+    assert func.arg_widgets['a'].label.text() == "text a:"
+
+
 def test_float_input():
     @gui
     @one
@@ -109,3 +118,7 @@ def test_inputpath_input():
     with pytest.raises(ArgsCheckError) as e:
         func.run_func()
     assert isinstance(e.value.args[0][0], ValueError)
+
+
+if __name__ == "__main__":
+    test_set_text()

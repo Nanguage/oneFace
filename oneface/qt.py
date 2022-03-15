@@ -68,7 +68,7 @@ class GUI():
                   f"Input widget constructor is not registered for {ann.type}")
             constructor = self.type_to_widget_constructor[ann.type.__name__]
             default = None if p.default is inspect._empty else p.default
-            w = constructor(n, ann.range, default)
+            w = constructor(n, ann.range, default, attrs=ann.kwargs)
             self.arg_widgets[n] = w
             layout.addWidget(w)
 
@@ -114,11 +114,12 @@ class GUI():
 
 
 class InputItem(QtWidgets.QWidget):
-    def __init__(self, name, range, default, *args, **kwargs):
+    def __init__(self, name, range, default, attrs, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = name
         self.range = range
         self.default = default
+        self.attrs = attrs
         self.init_layout()
         self.init_ui()
         self.setLayout(self.layout)
@@ -127,11 +128,12 @@ class InputItem(QtWidgets.QWidget):
         self.layout = QtWidgets.QHBoxLayout()
 
     def init_ui(self, label_stretch=1):
+        label = self.attrs.get('text', self.name)
+        self.label = QtWidgets.QLabel(f"{label}:")
         if label_stretch:
-            self.layout.addWidget(
-                QtWidgets.QLabel(f"{self.name}:"), stretch=label_stretch)
+            self.layout.addWidget(self.label, stretch=label_stretch)
         else:
-            self.layout.addWidget(QtWidgets.QLabel(f"{self.name}:"))
+            self.layout.addWidget(self.label)
 
     def get_value(self):
         return self.input.value()
@@ -153,6 +155,7 @@ class FloatInputItem(InputItem):
     def init_ui(self):
         super().init_ui()
         self.input = QtWidgets.QDoubleSpinBox()
+        self.input.setSingleStep(0.1)
         if self.range:
             self.input.setMinimum(self.range[0])
             self.input.setMaximum(self.range[1])
