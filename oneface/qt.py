@@ -65,7 +65,8 @@ class GUI():
                 raise NotImplementedError(
                   f"Input widget constructor is not registered for {ann.type}")
             constructor = self.type_to_widget_constructor[ann.type.__name__]
-            w = constructor(n, ann.range)
+            default = None if p.default is inspect._empty else p.default
+            w = constructor(n, ann.range, default)
             self.arg_widgets[n] = w
             layout.addWidget(w)
 
@@ -111,10 +112,11 @@ class GUI():
 
 
 class InputItem(QtWidgets.QWidget):
-    def __init__(self, name, range, *args, **kwargs):
+    def __init__(self, name, range, default, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = name
         self.range = range
+        self.default = default
         self.layout = QtWidgets.QHBoxLayout()
         self.init_ui()
         self.setLayout(self.layout)
@@ -133,6 +135,8 @@ class IntInputItem(InputItem):
         if self.range:
             self.input.setMinimum(self.range[0])
             self.input.setMaximum(self.range[1])
+        if self.default:
+            self.input.setValue(self.default)
         self.layout.addWidget(self.input)
 
 
@@ -143,6 +147,8 @@ class FloatInputItem(InputItem):
         if self.range:
             self.input.setMinimum(self.range[0])
             self.input.setMaximum(self.range[1])
+        if self.default:
+            self.input.setValue(self.default)
         self.layout.addWidget(self.input)
 
 
