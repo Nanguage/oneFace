@@ -3,10 +3,13 @@ import functools
 import inspect
 from io import StringIO
 import os.path as osp
+
 from dash import Dash, dcc, html, Input, Output, State
 from dash.exceptions import PreventUpdate
 from ansi2html import Ansi2HTMLConverter
 import visdcc
+
+from oneface.types import (Selection, SubSet, InputPath, OutputPath)
 
 
 HERE = osp.abspath(osp.dirname(__file__))
@@ -74,7 +77,9 @@ class App(object):
                 continue
             constructor = self.type_to_widget_constructor[ann.type.__name__]
             default = None if p.default is inspect._empty else p.default
-            widgets.append(constructor(n, ann.range, default))
+            widget = constructor(
+                n, ann.range, default, attrs=ann.kwargs).widget
+            widgets.append(widget)
             names.append(n)
             types.append(ann.type)
         return widgets, names, types
@@ -152,49 +157,83 @@ class App(object):
         self.dash_app.run_server(debug=self.debug)
 
 
-def number_input_widget(name, range, default=None, step=None):
-    return html.Div([
-        f"{name}: ",
-        dcc.Slider(
-            range[0], range[1], step,
-            id=f"input-{name}", value=(default or range[0]))
-    ])
+class InputItem(object):
+    def __init__(self, name, range, default, attrs=None):
+        self.name = name
+        self.range = range
+        self.default = default
+        self.attrs = attrs
+        self.input = self.get_input()
+        self.input.id = f"input-{name}"
+        self.widget = self.get_widget()
+
+    def get_input(self):
+        pass
+
+    def get_widget(self):
+        label = self.attrs.get("text", self.name)
+        return html.Div([
+            f"{label}: ",
+            self.input
+        ])
 
 
-def dropdown_widget(name, range, default=None):
-    return html.Div([
-        f"{name}: ",
-        dcc.Dropdown(range, id=f"input-{name}", value=(default or range[0]))
-    ])
+class IntInputItem(InputItem):
+    def get_input(self):
+        return dcc.Slider(
+            self.range[0], self.range[1], step=1,
+            value=(self.default or range[0])
+        )
 
 
-App.register_widget(
-    int,
-    functools.partial(number_input_widget, step=1))
-App.register_widget(
-    float,
-    functools.partial(number_input_widget, step=None))
+class FloatInputItem(InputItem):
+    def get_input(self):
+        return dcc.Slider(
+            self.range[0], self.range[1], step=None,
+            value=(self.default or range[0])
+        )
+
+
+class StrInputItem(InputItem):
+    def get_input(self):
+        return dcc.Input(
+            placeholder="Enter a value...",
+            type="text",
+            value=(self.default or "")
+        )
+
+
+class BoolInputItem(InputItem):
+    def get_input(self):
+        return dcc.RadioItems(
+            ["True", "False"],
+            value=(str(self.default) or "True")
+        )
+
+
+class DropdownInputItem(InputItem):
+    def get_input(self):
+        return dcc.Dropdown(
+            self.range,
+            value=(self.default or range[0])
+        )
+
+
+class MultiDropdownInputItem(InputItem):
+    def get_input(self):
+        return dcc.Dropdown(
+            self.range,
+            value=(self.default or range[0]), multi=True
+        )
+
+
+App.register_widget(int, IntInputItem)
+App.register_widget(float, FloatInputItem)
 App.register_type_convert(float)
-App.register_widget(str, dropdown_widget)
-
-
-if __name__ == "__main__":
-    import sys
-    sys.path.insert(0, "./")
-    from oneface.core import one, Arg
-
-    @app
-    @one
-    def func(a: Arg(int, [0, 10]),
-             b: Arg(float, [0, 10]),
-             c: Arg(str, ["a", "b", "c"])):  # noqa
-        print(c)
-        import time
-        for i in range(10):
-            time.sleep(1)
-            print(f"{i}")
-            sys.stderr.write("iii")
-            sys.stderr.flush()
-        return a + b
-
-    func()
+App.register_widget(str, StrInputItem)
+App.register_widget(bool, BoolInputItem)
+App.register_type_convert(bool, lambda s: s == "True")
+App.register_widget(Selection, DropdownInputItem)
+App.register_widget(SubSet, MultiDropdownInputItem)
+App.register_widget(InputPath, StrInputItem)
+App.register_widget(OutputPath, StrInputItem)
