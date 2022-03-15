@@ -173,7 +173,10 @@ class InputItem(object):
     def get_widget(self):
         label = self.attrs.get("text", self.name)
         return html.Div([
-            f"{label}: ",
+            html.Div(f"{label}: ", style={
+                "margin-top": "10px",
+                "font-size": "20px",
+            }),
             self.input
         ])
 
@@ -182,7 +185,7 @@ class IntInputItem(InputItem):
     def get_input(self):
         return dcc.Slider(
             self.range[0], self.range[1], step=1,
-            value=(self.default or range[0])
+            value=(self.default or self.range[0])
         )
 
 
@@ -190,7 +193,7 @@ class FloatInputItem(InputItem):
     def get_input(self):
         return dcc.Slider(
             self.range[0], self.range[1], step=None,
-            value=(self.default or range[0])
+            value=(self.default or self.range[0])
         )
 
 
@@ -199,7 +202,13 @@ class StrInputItem(InputItem):
         return dcc.Input(
             placeholder="Enter a value...",
             type="text",
-            value=(self.default or "")
+            value=(self.default or ""),
+            style={
+                "width": "100%",
+                "height": "40px",
+                "margin": "5px",
+                "font-size": "20px",
+            }
         )
 
 
