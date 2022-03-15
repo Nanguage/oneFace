@@ -1,6 +1,6 @@
 # oneFace
 
-Generating interfaces(CLI, Qt GUI, Dash web app) from a Python function. (**WIP**)
+oneFace is a library for automatically generating multiple interfaces(CLI, GUI, WebGUI) from a callable Python object. (**WIP**)
 
 <p>
     <a href="https://github.com/Nanguage/oneFace/actions/workflows/build_and_test.yml">
