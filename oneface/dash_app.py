@@ -27,14 +27,17 @@ class App(object):
 
     def __init__(
             self, func, name=None,
-            debug=True, conosole_interval=2000,
-            interactive=False, init_run=False):
+            show_console=True,
+            conosole_interval=2000,
+            interactive=False, init_run=False,
+            **server_args):
         self.func = func
         self.name = name
-        self.debug = debug
+        self.show_console = show_console
         self.console_interval = conosole_interval
         self.interactive = interactive
         self.init_run = init_run
+        self.server_args = server_args
         self.input_names = None
         self.input_types = None
         self.input_attrs = None
@@ -46,12 +49,29 @@ class App(object):
         self.input_names = names
         self.input_types = types
         self.input_attrs = attrs
-        layout = html.Div(children=[
+        sub_nodes = [
             html.H3("Arguments"),
             *widgets,
             html.Br(),
             html.Button("Run", id="run-btn"),
             html.Div("", style={"height": "20px"}),
+        ]
+        if self.show_console:
+            sub_nodes += self.get_console_layout()
+        sub_nodes += [
+            html.H3("Result"),
+            html.Div("", id="out"),
+        ]
+        layout = html.Div(children=sub_nodes, style={
+            'width': "60%",
+            'min-width': "400px",
+            'max-width': "800px",
+            'margin': "auto",
+        })
+        return layout
+
+    def get_console_layout(self):
+        return [
             html.H3("Console"),
             html.Div("", style={"height": "20px"}),
             dcc.Interval(
@@ -63,16 +83,8 @@ class App(object):
                 "height": "400px",
                 "resize": "both"
             }),
-            html.H3("Result"),
-            html.Div("", id="out"),
             visdcc.Run_js(id="jsscroll", run="")
-        ], style={
-            'width': "60%",
-            'min-width': "400px",
-            'max-width': "800px",
-            'margin': "auto",
-        })
-        return layout
+        ]
 
     def parse_args(self):
         from oneface.core import Arg
@@ -132,33 +144,34 @@ class App(object):
                 self.result = self.func(**kwargs)
             return self.result
 
-        @app.callback(
-            Output("console-out", "srcDoc"),
-            Input("console-interval", "n_intervals"))
-        def update_console(n):
-            conv = Ansi2HTMLConverter()
-            console_buffer.seek(0)
-            lines = console_buffer.readlines()
-            html_ = conv.convert("".join(lines))
-            return html_
+        if self.show_console:
+            @app.callback(
+                Output("console-out", "srcDoc"),
+                Input("console-interval", "n_intervals"))
+            def update_console(n):
+                conv = Ansi2HTMLConverter()
+                console_buffer.seek(0)
+                lines = console_buffer.readlines()
+                html_ = conv.convert("".join(lines))
+                return html_
 
-        doc_cache = None
+            doc_cache = None
 
-        @app.callback(
-            Output('jsscroll', 'run'),
-            Input('console-out', 'srcDoc'))
-        def scroll(doc):
-            scroll_cmd = """
-            var out = document.getElementById('console-out');
-            out.contentWindow.scrollTo(0, 999999999);
-            """
-            nonlocal doc_cache
-            if doc == doc_cache:
-                cmd = ""
-            else:
-                cmd = scroll_cmd
-            doc_cache = doc
-            return cmd
+            @app.callback(
+                Output('jsscroll', 'run'),
+                Input('console-out', 'srcDoc'))
+            def scroll(doc):
+                scroll_cmd = """
+                var out = document.getElementById('console-out');
+                out.contentWindow.scrollTo(0, 999999999);
+                """
+                nonlocal doc_cache
+                if doc == doc_cache:
+                    cmd = ""
+                else:
+                    cmd = scroll_cmd
+                doc_cache = doc
+                return cmd
 
         return app
 
@@ -173,7 +186,7 @@ class App(object):
         cls.convert_types[type.__name__] = converter
 
     def __call__(self):
-        self.dash_app.run_server(debug=self.debug)
+        self.dash_app.run_server(**self.server_args)
 
 
 class InputItem(object):
