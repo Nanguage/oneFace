@@ -25,20 +25,27 @@ class App(object):
     type_to_widget_constructor = {}
     convert_types = {}
 
-    def __init__(self, func, name=None, debug=True, conosole_interval=2000):
+    def __init__(
+            self, func, name=None,
+            debug=True, conosole_interval=2000,
+            interactive=False, init_run=False):
         self.func = func
         self.name = name
         self.debug = debug
         self.console_interval = conosole_interval
+        self.interactive = interactive
+        self.init_run = init_run
         self.input_names = None
         self.input_types = None
+        self.input_attrs = None
         self.result = None
         self.dash_app = self.get_dash_app()
 
     def get_layout(self):
-        widgets, names, types = self.parse_args()
+        widgets, names, types, attrs = self.parse_args()
         self.input_names = names
         self.input_types = types
+        self.input_attrs = attrs
         layout = html.Div(children=[
             html.H3("Arguments"),
             *widgets,
@@ -70,23 +77,35 @@ class App(object):
     def parse_args(self):
         from oneface.core import Arg
         sig = inspect.signature(self.func)
-        widgets, names, types = [], [], []
+        widgets, names, types, attrs = [], [], [], []
         for n, p in sig.parameters.items():
             ann = p.annotation
             if not isinstance(ann, Arg):
                 continue
             constructor = self.type_to_widget_constructor[ann.type.__name__]
             default = None if p.default is inspect._empty else p.default
+            attr = ann.kwargs
             widget = constructor(
-                n, ann.range, default, attrs=ann.kwargs).widget
+                n, ann.range, default, attrs=attr).widget
             widgets.append(widget)
             names.append(n)
             types.append(ann.type)
-        return widgets, names, types
+            attrs.append(attr)
+        return widgets, names, types, attrs
 
     def get_run_callback_decorator(self, app):
         inputs = [Input("run-btn", 'n_clicks')]
-        inputs += [State(f"input-{n}", "value") for n in self.input_names]
+        for i, n in enumerate(self.input_names):
+            is_interactive = (
+                self.interactive or
+                (self.input_attrs[i].get('interactive') is True)
+            )
+            id_ = f"input-{n}"
+            if is_interactive:
+                input = Input(id_, "value")
+            else:
+                input = State(id_, "value")
+            inputs.append(input)
         output = Output("out", "children")
         deco = app.callback(output, *inputs)
         return deco
@@ -100,7 +119,7 @@ class App(object):
 
         @self.get_run_callback_decorator(app)
         def run(n_clicks, *args):
-            if n_clicks is None:
+            if (not self.init_run) and (n_clicks is None):
                 raise PreventUpdate
             kwargs = dict(zip(self.input_names, args))
             for i, (k, v) in enumerate(kwargs.items()):
