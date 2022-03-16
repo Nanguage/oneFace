@@ -30,6 +30,7 @@ class App(object):
             show_console=True,
             conosole_interval=2000,
             interactive=False, init_run=False,
+            result_show_type="text",
             **server_args):
         self.func = func
         self.name = name
@@ -37,6 +38,7 @@ class App(object):
         self.console_interval = conosole_interval
         self.interactive = interactive
         self.init_run = init_run
+        self.result_show_type = result_show_type
         self.server_args = server_args
         self.input_names = None
         self.input_types = None
@@ -58,10 +60,7 @@ class App(object):
         ]
         if self.show_console:
             sub_nodes += self.get_console_layout()
-        sub_nodes += [
-            html.H3("Result"),
-            html.Div("", id="out"),
-        ]
+        sub_nodes += self.get_result_layout()
         layout = html.Div(children=sub_nodes, style={
             'width': "60%",
             'min-width': "400px",
@@ -85,6 +84,22 @@ class App(object):
             }),
             visdcc.Run_js(id="jsscroll", run="")
         ]
+
+    def get_result_layout(self):
+        layout = [
+            html.H3("Result"),
+        ]
+        if self.result_show_type == "text":
+            layout += [
+                html.Div("", id="out"),
+            ]
+        elif self.result_show_type == "download":
+            layout += [
+                html.Div("", id="out", style={'display': 'none'}),
+                html.Button("Download Result", id="res-download-btn"),
+                dcc.Download(id="res-download-index")
+            ]
+        return layout
 
     def parse_args(self):
         from oneface.core import Arg
@@ -145,35 +160,49 @@ class App(object):
             return self.result
 
         if self.show_console:
-            @app.callback(
-                Output("console-out", "srcDoc"),
-                Input("console-interval", "n_intervals"))
-            def update_console(n):
-                conv = Ansi2HTMLConverter()
-                console_buffer.seek(0)
-                lines = console_buffer.readlines()
-                html_ = conv.convert("".join(lines))
-                return html_
+            self.add_console_callbacks(app, console_buffer)
 
-            doc_cache = None
-
-            @app.callback(
-                Output('jsscroll', 'run'),
-                Input('console-out', 'srcDoc'))
-            def scroll(doc):
-                scroll_cmd = """
-                var out = document.getElementById('console-out');
-                out.contentWindow.scrollTo(0, 999999999);
-                """
-                nonlocal doc_cache
-                if doc == doc_cache:
-                    cmd = ""
-                else:
-                    cmd = scroll_cmd
-                doc_cache = doc
-                return cmd
+        if self.result_show_type == "download":
+            self.add_download_callbacks(app)
 
         return app
+
+    def add_console_callbacks(self, app, console_buffer):
+        @app.callback(
+            Output("console-out", "srcDoc"),
+            Input("console-interval", "n_intervals"))
+        def update_console(n):
+            conv = Ansi2HTMLConverter()
+            console_buffer.seek(0)
+            lines = console_buffer.readlines()
+            html_ = conv.convert("".join(lines))
+            return html_
+
+        doc_cache = None
+
+        @app.callback(
+            Output('jsscroll', 'run'),
+            Input('console-out', 'srcDoc'))
+        def scroll(doc):
+            scroll_cmd = """
+            var out = document.getElementById('console-out');
+            out.contentWindow.scrollTo(0, 999999999);
+            """
+            nonlocal doc_cache
+            if doc == doc_cache:
+                cmd = ""
+            else:
+                cmd = scroll_cmd
+            doc_cache = doc
+            return cmd
+
+    def add_download_callbacks(self, app):
+        @app.callback(
+            Output("res-download-index", "data"),
+            Input("res-download-btn", "n_clicks"),
+            prevent_initial_call=True)
+        def send_file(n_clicks):
+            return dcc.send_file(self.result)
 
     @classmethod
     def register_widget(cls, type, widget_constructor):
