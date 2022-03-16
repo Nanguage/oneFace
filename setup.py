@@ -45,6 +45,7 @@ def get_install_requires():
 
 
 requires_test = ['pytest', 'pytest-cov', 'flake8']
+requires_doc = ["mkdoc"]
 requires_dash = ['ansi2html', 'dash', 'visdcc']
 
 
@@ -66,6 +67,8 @@ setup(
     install_requires=get_install_requires(),
     extras_require={
         'test': requires_test,
+        'doc': requires_doc,
+        'dev': requires_test + requires_doc,
         'dash': requires_dash,
         'qt': ['pyqt6'],
         'pyqt5': ['pyqt5'],

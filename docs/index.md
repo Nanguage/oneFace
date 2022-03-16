@@ -36,4 +36,4 @@ These code will generate the following interfaces:
 
 |  CLI | Qt | Dash |
 | ---- | -- | ---- |
-| ![CLI](./docs/imgs/bmi_cli.png) | ![Qt](./docs/imgs/bmi_qt.png) | ![Dash](./docs/imgs/bmi_dash.png) |
+| ![CLI](imgs/bmi_cli.png) | ![Qt](imgs/bmi_qt.png) | ![Dash](imgs/bmi_dash.png) |
