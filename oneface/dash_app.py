@@ -244,9 +244,11 @@ class InputItem(object):
 
 class IntInputItem(InputItem):
     def get_input(self):
-        return dcc.Slider(
-            self.range[0], self.range[1], step=1,
-            value=(self.default or self.range[0])
+        return dcc.Input(
+            min=self.range[0], max=self.range[1], type="number", step=1,
+            value=(self.default or self.range[0]), style={
+                'width': "100%",
+            }
         )
 
 

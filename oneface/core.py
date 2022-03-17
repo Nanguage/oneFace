@@ -107,9 +107,9 @@ class One(object):
         errors = []
         for n, p in sig.parameters.items():
             self._check_arg(n, p.annotation, vals[n], errors)
-        if self.name:
-            console.print(f"Run: [bold purple]{self.name}")
         if self.print_args:
+            if self.name:
+                console.print(f"Run: [bold purple]{self.name}")
             console.print("Arguments table:\n")
             console.print(self.table)
             console.print()
