@@ -1,5 +1,7 @@
 site_name: oneFace Docs
 
+repo_url: https://github.com/Nanguage/oneFace
+
 theme: material
 
 markdown_extensions:

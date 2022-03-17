@@ -11,8 +11,8 @@
     <a href="https://app.codecov.io/gh/Nanguage/oneFace">
         <img src="https://codecov.io/gh/Nanguage/oneFace/branch/master/graph/badge.svg" alt="codecov">
     </a>
-    <a href="https://nanguage.github.io/oneFace/">
-    	<img src="https://readthedocs.org/projects/ansicolortags/badge/?version=latest" alt="Documentation">
+    <a href="https://oneface.readthedocs.io/en/latest/">
+    	<img src="https://readthedocs.org/projects/oneface/badge/?version=latest" alt="Documentation">
     </a>
   <a href="https://pypi.org/project/oneFace/">
     <img src="https://img.shields.io/pypi/v/oneface.svg" alt="Install with PyPi" />
@@ -50,6 +50,14 @@ These code will generate the following interfaces:
 |  CLI | Qt | Dash |
 | ---- | -- | ---- |
 | ![CLI](./docs/imgs/bmi_cli.png) | ![Qt](./docs/imgs/bmi_qt.png) | ![Dash](./docs/imgs/bmi_dash.png) |
+
+## Features
+
++ Generate CLI, Qt GUI, Dash Web app from a python function.
++ Automatically check the type and range of input parameters and pretty print them.
++ Easy extension of parameter types and GUI widgets.
+
+Detail usage see the [documentation](https://oneface.readthedocs.io/en/latest/).
 
 ## Installation
 
