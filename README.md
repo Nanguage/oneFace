@@ -12,6 +12,9 @@ oneFace is a library for automatically generating multiple interfaces(CLI, GUI, 
     <a href="https://nanguage.github.io/oneFace/">
     	<img src="https://readthedocs.org/projects/ansicolortags/badge/?version=latest" alt="Documentation">
     </a>
+  <a href="https://pypi.org/project/oneFace/">
+    <img src="https://img.shields.io/pypi/v/oneface.svg" alt="Install with PyPi" />
+  </a>
 </p>
 
 
