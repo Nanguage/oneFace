@@ -45,7 +45,7 @@ def get_install_requires():
 
 
 requires_test = ['pytest', 'pytest-cov', 'flake8']
-requires_doc = ["mkdoc"]
+requires_doc = ["mkdocs", "mkdocs-material"]
 requires_dash = ['ansi2html', 'dash', 'visdcc']
 
 

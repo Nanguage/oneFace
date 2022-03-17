@@ -9,6 +9,9 @@ oneFace is a library for automatically generating multiple interfaces(CLI, GUI, 
     <a href="https://app.codecov.io/gh/Nanguage/oneFace">
         <img src="https://codecov.io/gh/Nanguage/oneFace/branch/master/graph/badge.svg" alt="codecov">
     </a>
+    <a href="https://nanguage.github.io/oneFace/">
+    	<img src="https://readthedocs.org/projects/ansicolortags/badge/?version=latest" alt="Documentation">
+    </a>
 </p>
 
 
