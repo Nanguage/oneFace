@@ -4,7 +4,7 @@ import re
 
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "Operating System :: OS Independent"
+    "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.7",
