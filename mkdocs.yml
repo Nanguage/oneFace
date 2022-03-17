@@ -4,6 +4,10 @@ repo_url: https://github.com/Nanguage/oneFace
 
 theme: material
 
+nav:
+  - Home: index.md
+  - Basic Usage: basic_usage.md
+
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
