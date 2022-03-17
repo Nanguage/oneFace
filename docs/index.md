@@ -1,6 +1,6 @@
 # oneFace
 
-oneFace is a library for automatically generating multiple interfaces(CLI, GUI, WebGUI) from a callable Python object.
+oneFace is a Python library for automatically generating multiple interfaces(CLI, GUI, WebGUI) from a callable Python object.
 
 ```Python
 from oneface import one, Arg

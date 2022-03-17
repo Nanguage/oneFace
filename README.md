@@ -1,6 +1,8 @@
-# oneFace
+<div align="center">
 
-oneFace is a library for automatically generating multiple interfaces(CLI, GUI, WebGUI) from a callable Python object.
+<img src="./docs/imgs/logo.png">
+
+<p> oneFace is a Python library for automatically generating multiple interfaces(CLI, GUI, WebGUI) from a callable Python object. </p>
 
 <p>
     <a href="https://github.com/Nanguage/oneFace/actions/workflows/build_and_test.yml">
@@ -17,6 +19,11 @@ oneFace is a library for automatically generating multiple interfaces(CLI, GUI, 
   </a>
 </p>
 
+</div>
+
+
+
+oneFace is an easy way to create interfaces in Python, just decorate your function and mark the type and range of the arguments:
 
 ```Python
 from oneface import one, Arg
@@ -43,3 +50,18 @@ These code will generate the following interfaces:
 |  CLI | Qt | Dash |
 | ---- | -- | ---- |
 | ![CLI](./docs/imgs/bmi_cli.png) | ![Qt](./docs/imgs/bmi_qt.png) | ![Dash](./docs/imgs/bmi_dash.png) |
+
+## Installation
+
+To install oneFace with complete dependency:
+
+```
+$ pip install oneface[all]
+```
+
+Or install with just qt or dash dependency:
+
+```
+$ pip install oneface[qt]  # qt
+$ pip install oneface[dash]  # dash
+```
