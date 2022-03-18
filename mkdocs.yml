@@ -7,6 +7,7 @@ theme: material
 nav:
   - Home: index.md
   - Basic Usage: basic_usage.md
+  - Built-in Types: builtin_types.md
 
 markdown_extensions:
   - pymdownx.highlight:
