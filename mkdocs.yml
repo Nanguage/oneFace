@@ -9,6 +9,9 @@ nav:
   - Basic Usage: basic_usage.md
   - Built-in Types: builtin_types.md
   - Type Extension: type_extension.md
+  - Interface configuration:
+    - Qt configs: qt_confs.md
+    - Dash configs: dash_confs.md
 
 markdown_extensions:
   - pymdownx.highlight:

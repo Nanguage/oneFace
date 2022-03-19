@@ -31,10 +31,9 @@ class GUI():
     type_to_widget_constructor = {}
 
     def __init__(self, func, name=None, size=None,
-                 run_once=True, open_terminal=False):
+                 run_once=True):
         self.func = func
         self.run_once = run_once
-        self.open_terminal = open_terminal
         self.result = None
         self.app = QtWidgets.QApplication([])
         self.main_window = QtWidgets.QMainWindow()
