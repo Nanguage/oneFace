@@ -105,3 +105,116 @@ Traceback (most recent call last):
 oneface.core.ArgsCheckError: [ValueError('Input value <__main__.Person object at 0x000001FBEC3FC248> is not in a valid range.')]
 ```
 
+## Registration of interface widgets
+
+If you want to generate the appropriate widget for your custom type, you should register it in the specific interface.
+
+### Register widgets in Qt interface
+
+```Python
+from oneface.qt import GUI, InputItem
+from qtpy import QtWidgets
+
+
+class PersonInputItem(InputItem):
+    def init_layout(self):
+        self.layout = QtWidgets.QVBoxLayout()
+
+    def init_ui(self):
+        self.name_input = QtWidgets.QLineEdit()
+        self.age_input = QtWidgets.QSpinBox()
+        if self.range:
+            self.age_input.setMinimum(self.range[0])
+            self.age_input.setMaximum(self.range[1])
+        if self.default:
+            self.name_input.setText(self.default.name)
+            self.age_input.setValue(self.default.age)
+        self.layout.addWidget(QtWidgets.QLabel("person:"))
+        name_row = QtWidgets.QHBoxLayout()
+        name_row.addWidget(QtWidgets.QLabel("name:"))
+        name_row.addWidget(self.name_input)
+        self.layout.addLayout(name_row)
+        age_row = QtWidgets.QHBoxLayout()
+        age_row.addWidget(QtWidgets.QLabel("age:"))
+        age_row.addWidget(self.age_input)
+        self.layout.addLayout(age_row)
+
+    def get_value(self):
+        return Person(self.name_input.text(), self.age_input.value())
+
+
+GUI.register_widget(Person, PersonInputItem)
+```
+
+![person_ext_qt](./imgs/person_ext_qt.png)
+
+
+### Register widgets in Dash interface
+
+
+```Python
+from oneface.dash_app import App, InputItem
+from dash import dcc
+
+class PersonInputItem(InputItem):
+    def get_input(self):
+        if self.default:
+            default_val = f"Person('{self.default.name}', {self.default.age})"
+        else:
+            default_val = ""
+        return dcc.Input(
+            placeholder="example: Person('age', 20)",
+            type="text",
+            value=default_val,
+            style={
+                "width": "100%",
+                "height": "40px",
+                "margin": "5px",
+                "font-size": "20px",
+            }
+        )
+
+
+App.register_widget(Person, PersonInputItem)
+App.register_type_convert(Person, lambda s: eval(s))
+```
+
+!!! warning
+
+    Currently, there is no good way to composite dash components. Here, for simplicity, we use the serialized input Person. The above code is not recommended for use in production environments. see [issue#1](https://github.com/Nanguage/oneFace/issues/1)
+
+![person_ext_dash](./imgs/person_ext_dash.png)
+
+#### Another example: TextArea
+
+Here we give another example of using TextArea to get long string input.
+
+```
+from oneface import one, Arg
+from oneface.dash_app import App, InputItem
+from dash import dcc
+
+
+class LongStrInputItem(InputItem):
+    def get_input(self):
+        return dcc.Textarea(
+        placeholder='Enter a value...',
+        value=(self.default or ""),
+        style={'width': '100%'}
+    )
+
+
+App.register_widget(str, LongStrInputItem)
+
+
+@one
+def print_doc(doc: Arg(str)):
+    print(doc)
+
+
+print_doc.dash_app()
+```
+
+![long_str](./imgs/long_str.png)
+
+More details on the dash component definition can be found in the [dash documentation](https://dash.plotly.com/dash-core-components).
