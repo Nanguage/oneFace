@@ -8,6 +8,7 @@ nav:
   - Home: index.md
   - Basic Usage: basic_usage.md
   - Built-in Types: builtin_types.md
+  - Type Extension: type_extension.md
 
 markdown_extensions:
   - pymdownx.highlight:

@@ -27,7 +27,7 @@ def func(in_path: Arg(InputPath),
          c: Arg(str) = "aaaa",
          d: Arg(bool) = False,
          e: Arg(Selection, ["a", "b", "c"]) = "a",
-         f: Arg(SubSet, ["a", "b", "c"], interactive=True) = ["a"]):
+         f: Arg(SubSet, ["a", "b", "c"]) = ["a"]):
     print(in_path, out_path)
     print(a, b, c, d, e, f)
     return a + b
