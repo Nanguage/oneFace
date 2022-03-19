@@ -109,3 +109,19 @@ bmi.dash_app(result_show_type="download")
 ```
 
 ![download_res_dash](./imgs/download_res_dash.gif)
+
+## Host and Port
+
+Specify the app's host and port:
+
+```Python
+bmi.dash_app(host="0.0.0.0", port=9000)
+```
+
+## debug mode
+
+The debug mode is useful for debugging errors, use `debug=True` to open it:
+
+```Python
+bmi.dash_app(debug=True)
+```
