@@ -28,14 +28,14 @@ class App(object):
     def __init__(
             self, func, name=None,
             show_console=True,
-            conosole_interval=2000,
+            console_interval=2000,
             interactive=False, init_run=False,
             result_show_type="text",
             **server_args):
         self.func = func
         self.name = name
         self.show_console = show_console
-        self.console_interval = conosole_interval
+        self.console_interval = console_interval
         self.interactive = interactive
         self.init_run = init_run
         self.result_show_type = result_show_type
