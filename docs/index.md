@@ -13,14 +13,14 @@ oneFace is a Python library for automatically generating multiple interfaces(CLI
 To install oneFace with complete dependency:
 
 ```
-$ pip install oneface[all]
+$ pip install "oneface[all]"
 ```
 
 Or install with just qt or dash dependency:
 
 ```
-$ pip install oneface[qt]  # qt
-$ pip install oneface[dash]  # dash
+$ pip install "oneface[qt]"  # qt
+$ pip install "oneface[dash]"  # dash
 ```
 
 ### Qt bindings
@@ -28,7 +28,7 @@ $ pip install oneface[dash]  # dash
 oneFace support different Qt bindings: PyQt6(default), PyQt5, PySide2, PySide6. It can be specified: 
 
 ```
-$ pip install oneface[pyside2]  # for example
+$ pip install "oneface[pyside2]"  # for example
 ```
 
 ## Example

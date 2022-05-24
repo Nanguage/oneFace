@@ -100,7 +100,7 @@ def bmi(name: Arg(str) = "Tom",
         height: Arg(float, [100, 250], interactive=True) = 160,
         weight: Arg(float, [0, 300]) = 50.0):
     BMI = weight / (height / 100) ** 2
-    out_path = f"./{name}_bmi.txt", 'w'
+    out_path = f"./{name}_bmi.txt"
     with open(out_path) as fo:
         fo.write(f"Hi {name}. Your BMI is: {BMI}")
     return out_path
