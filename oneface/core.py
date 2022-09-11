@@ -62,14 +62,14 @@ Arg.register_type_check(bool)
 def parse_args_kwargs(args: tuple, kwargs: dict, func: object):
     """Get the pass in value of the func
     arguments according to it's signature."""
-    args = list(args)
+    args_ = list(args)
     kwargs = copy(kwargs)
     res = {}
     sig = inspect.signature(func)
     for n, p in sig.parameters.items():
         has_default = p.default is not inspect._empty
-        if len(args) > 0:
-            res[n] = args.pop(0)
+        if len(args_) > 0:
+            res[n] = args_.pop(0)
         elif (len(kwargs) > 0) and (n in kwargs):
             res[n] = kwargs.pop(n)
         else:
