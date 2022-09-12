@@ -1,88 +1,43 @@
+import typing as T
 from copy import copy
 from ctypes import ArgumentError
-import inspect
 import functools
 
 from rich.console import Console
 from rich.table import Table
 
 
+from .arg import Empty, Arg, get_func_argobjs
+
+
 console = Console()
 
 
-class Arg():
-
-    type_to_range_checker = {}
-    type_to_type_checker = {}
-
-    def __init__(self, type=str, range=None, **kwargs):
-        self.type = type
-        self.range = range
-        self.kwargs = kwargs
-
-    @property
-    def type_checker(self):
-        return self.type_to_type_checker.get(self.type.__name__, None)
-
-    @property
-    def range_checker(self):
-        return self.type_to_range_checker.get(self.type.__name__, None)
-
-    def check(self, val):
-        if (self.range_checker is None) and (self.type_checker is None):
-            raise NotImplementedError(
-                f"Not checker registered for type: {type}")
-        if self.type_checker is not None:
-            if not self.type_checker(val, self.type):
-                raise TypeError(
-                    f"Input value {val} is not in valid type({self.type})")
-        if self.range_checker is not None:
-            if (not self.range_checker(val, self.range)):
-                raise ValueError(f"Input value {val} is not in a valid range.")
-
-    @classmethod
-    def register_range_check(cls, type, checker):
-        cls.type_to_range_checker[type.__name__] = checker
-
-    @classmethod
-    def register_type_check(cls, type, checker=None):
-        checker = checker or (lambda v, t: isinstance(v, t))
-        cls.type_to_type_checker[type.__name__] = checker
+class ArgsCheckError(Exception):
+    pass
 
 
-# register basic types
-Arg.register_type_check(str)
-Arg.register_range_check(int, lambda v, range: range[0] <= v <= range[1])
-Arg.register_type_check(int)
-Arg.register_range_check(float, lambda v, range: range[0] <= v <= range[1])
-Arg.register_type_check(float)
-Arg.register_type_check(bool)
-
-
-def parse_args_kwargs(args: tuple, kwargs: dict, func: object):
+def parse_pass_in(
+        args: tuple, kwargs: dict,
+        arg_objs: T.OrderedDict[str, "Arg"]):
     """Get the pass in value of the func
     arguments according to it's signature."""
     args_ = list(args)
     kwargs = copy(kwargs)
     res = {}
-    sig = inspect.signature(func)
-    for n, p in sig.parameters.items():
-        has_default = p.default is not inspect._empty
+    for n, a in arg_objs.items():
+        has_default = a.default is not Empty
         if len(args_) > 0:
             res[n] = args_.pop(0)
         elif (len(kwargs) > 0) and (n in kwargs):
             res[n] = kwargs.pop(n)
         else:
             if has_default:
-                res[n] = p.default
+                res[n] = a.default
             else:
                 raise ArgumentError(
                     f"{n} is not provided and has no default value.")
     return res
-
-
-class ArgsCheckError(Exception):
-    pass
 
 
 def one(func=None, **kwargs):
@@ -95,42 +50,46 @@ class One(object):
     def __init__(self, func, print_args=True, name=None):
         self.func = func
         functools.update_wrapper(self, func)
+        self.arg_objs = get_func_argobjs(func)
         self.name = name if name is not None else func.__name__
-        self.print_args = print_args
+        self.is_print_args = print_args
         self.table = None
 
     def __call__(self, *args, **kwargs):
-        self.table = self.get_argument_table()
-        sig = inspect.signature(self.func)
+        if self.is_print_args:
+            self.table = self.get_argument_table()
         # check args
-        vals = parse_args_kwargs(args, kwargs, self.func)
+        vals = parse_pass_in(args, kwargs, self.arg_objs)
         errors = []
-        for n, p in sig.parameters.items():
-            self._check_arg(n, p.annotation, vals[n], errors)
-        if self.print_args:
-            if self.name:
-                console.print(f"Run: [bold purple]{self.name}")
-            console.print("Arguments table:\n")
-            console.print(self.table)
-            console.print()
+        for n, arg in self.arg_objs.items():
+            self._check_arg(n, arg, vals[n], errors)
+        if self.is_print_args:
+            self.print_args()
         if len(errors) > 0:
             raise ArgsCheckError(errors)
         return self.func(*args, **kwargs)
+
+    def print_args(self):
+        if self.name:
+            console.print(f"Run: [bold purple]{self.name}")
+        console.print("Arguments table:\n")
+        console.print(self.table)
+        console.print()
 
     def __get__(self, obj, objtype):
         """Support instance method
         see https://stackoverflow.com/a/3296318/8500469"""
         return functools.partial(self.__call__, obj)
 
-    def _check_arg(self, name, ann, val, errors):
-        if not isinstance(ann, Arg):
-            return
+    def _check_arg(
+            self, name: str, arg: Arg,
+            val: T.Any, errors: T.List[Exception]):
         val_str = str(val)
-        range_str = str(ann.range)
+        range_str = str(arg.range)
         tp_str = str(type(val))
-        ann_tp_str = str(ann.type)
+        ann_tp_str = str(arg.type)
         try:
-            ann.check(val)
+            arg.check(val)
         except Exception as e:
             errors.append(e)
             if isinstance(e, ValueError):
@@ -141,7 +100,8 @@ class One(object):
                 tp_str = f"[red]{tp_str}[/red]"
             else:
                 raise e
-        self.table.add_row(name, ann_tp_str, range_str, val_str, tp_str)
+        if self.is_print_args:
+            self.table.add_row(name, ann_tp_str, range_str, val_str, tp_str)
 
     @staticmethod
     def get_argument_table():

@@ -1,9 +1,9 @@
 import functools
-import inspect
 from qtpy import QtWidgets
 from qtpy import QtCore
 
-from oneface.types import (InputPath, OutputPath, Selection, SubSet)
+from .types import (InputPath, OutputPath, Selection, SubSet)
+from .arg import Empty, get_func_argobjs
 
 
 class Worker(QtCore.QObject):
@@ -55,19 +55,17 @@ class GUI():
         self.window.setLayout(self.layout)
         self.main_window.setCentralWidget(self.window)
 
-    def compose_arg_widgets(self, layout):
-        from oneface.core import Arg
-        sig = inspect.signature(self.func)
-        for n, p in sig.parameters.items():
-            ann = p.annotation
-            if not isinstance(ann, Arg):
+    def compose_arg_widgets(self, layout: QtWidgets.QVBoxLayout):
+        arg_objs = get_func_argobjs(self.func)
+        for n, a in arg_objs.items():
+            if a.type is Empty:
                 continue
-            if ann.type.__name__ not in self.type_to_widget_constructor:
+            if a.type.__name__ not in self.type_to_widget_constructor:
                 raise NotImplementedError(
-                  f"Input widget constructor is not registered for {ann.type}")
-            constructor = self.type_to_widget_constructor[ann.type.__name__]
-            default = None if p.default is inspect._empty else p.default
-            w = constructor(n, ann.range, default, attrs=ann.kwargs)
+                  f"Input widget constructor is not registered for {a.type}")
+            constructor = self.type_to_widget_constructor[a.type.__name__]
+            default = None if a.default is Empty else a.default
+            w = constructor(n, a.range, default, attrs=a.kwargs)
             self.arg_widgets[n] = w
             layout.addWidget(w)
 

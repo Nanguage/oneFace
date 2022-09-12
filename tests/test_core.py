@@ -1,4 +1,3 @@
-import inspect
 from oneface.core import *
 
 import pytest
@@ -78,17 +77,18 @@ def test_class_method_arg_check():
         
 
 
-def test_parse_args_kwargs():
+def test_parse_pass_in():
     def f1(a, b, c=1, d=2):
         pass
-    args = parse_args_kwargs((1, 2), {'d': 10}, f1)
-    assert (args['a'] == 1) and (args['b'] == 2) and (args['c'] == 1) and (args['d'] == 10)
-    args = parse_args_kwargs((1, 2, 3), {}, f1)
-    assert (args['a'] == 1) and (args['b'] == 2) and (args['c'] == 3) and (args['d'] == 2)
+    arg_objs = get_func_argobjs(f1)
+    vals = parse_pass_in((1, 2), {'d': 10}, arg_objs)
+    assert (vals['a'] == 1) and (vals['b'] == 2) and (vals['c'] == 1) and (vals['d'] == 10)
+    vals = parse_pass_in((1, 2, 3), {}, arg_objs)
+    assert (vals['a'] == 1) and (vals['b'] == 2) and (vals['c'] == 3) and (vals['d'] == 2)
     with pytest.raises(ArgumentError):
-        args = parse_args_kwargs((1,), {}, f1)
-    args = parse_args_kwargs([], {'a':1, 'b':2}, f1)
-    assert (args['a'] == 1) and (args['b'] == 2) and (args['c'] == 1) and (args['d'] == 2)
+        vals = parse_pass_in((1,), {}, arg_objs)
+    vals = parse_pass_in([], {'a':1, 'b':2}, arg_objs)
+    assert (vals['a'] == 1) and (vals['b'] == 2) and (vals['c'] == 1) and (vals['d'] == 2)
 
 
 def test_docstring():
@@ -100,7 +100,7 @@ def test_docstring():
 
 
 if __name__ == "__main__":
-    #test_arg_check()
+    test_arg_check()
     #test_arg_register()
     #test_print_args()
-    test_class_method_arg_check()
+    #test_class_method_arg_check()

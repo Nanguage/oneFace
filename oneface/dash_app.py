@@ -1,6 +1,5 @@
 import contextlib
 import functools
-import inspect
 from io import StringIO
 import os.path as osp
 
@@ -9,7 +8,8 @@ from dash.exceptions import PreventUpdate
 from ansi2html import Ansi2HTMLConverter
 import visdcc
 
-from oneface.types import (Selection, SubSet, InputPath, OutputPath)
+from .types import (Selection, SubSet, InputPath, OutputPath)
+from .arg import Empty, get_func_argobjs
 
 
 HERE = osp.abspath(osp.dirname(__file__))
@@ -102,21 +102,19 @@ class App(object):
         return layout
 
     def parse_args(self):
-        from oneface.core import Arg
-        sig = inspect.signature(self.func)
         widgets, names, types, attrs = [], [], [], []
-        for n, p in sig.parameters.items():
-            ann = p.annotation
-            if not isinstance(ann, Arg):
+        arg_objs = get_func_argobjs(self.func)
+        for n, a in arg_objs.items():
+            if a.type is Empty:
                 continue
-            constructor = self.type_to_widget_constructor[ann.type.__name__]
-            default = None if p.default is inspect._empty else p.default
-            attr = ann.kwargs
+            constructor = self.type_to_widget_constructor[a.type.__name__]
+            default = None if a.default is Empty else a.default
+            attr = a.kwargs
             widget = constructor(
-                n, ann.range, default, attrs=attr).widget
+                n, a.range, default, attrs=attr).widget
             widgets.append(widget)
             names.append(n)
-            types.append(ann.type)
+            types.append(a.type)
             attrs.append(attr)
         return widgets, names, types, attrs
 
