@@ -5,7 +5,7 @@ import pytest
 
 
 def test_selection():
-    @one
+    @one(print_args=False)
     def func1(a: Arg(Selection, ["a", 2, 3])):
         print(a)
         return a
@@ -18,7 +18,7 @@ def test_selection():
 
 
 def test_subset():
-    @one
+    @one(print_args=False)
     def func1(s: Arg(SubSet, [1,2,3])):
         print(s)
         return s
@@ -31,7 +31,7 @@ def test_subset():
 
 
 def test_inputpath():
-    @one
+    @one(print_args=False)
     def func1(s: Arg(InputPath)):
         print(s)
         return s
@@ -46,7 +46,7 @@ def test_inputpath():
 
 
 def test_outputpath():
-    @one
+    @one(print_args=False)
     def func1(s: Arg(OutputPath)):
         print(s)
         return s

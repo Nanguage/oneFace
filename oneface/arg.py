@@ -41,7 +41,7 @@ class Arg(metaclass=ArgMeta):
             if not self.type_checker(val, self.type):
                 raise TypeError(
                     f"Input value {val} is not in valid type({self.type})")
-        if (self.range is not None) and (self.range_checker is not None):
+        if (self.range_checker is not None):
             if (not self.range_checker(val, self.range)):
                 raise ValueError(f"Input value {val} is not in a valid range.")
 
@@ -56,11 +56,15 @@ class Arg(metaclass=ArgMeta):
 
 
 # register basic types
+def _check_number_in_range(v, range):
+    return (range is None) or (range[0] <= v <= range[1])
+
+
 Arg.register_type_check(Empty, lambda v, range: True)
 Arg.register_type_check(str)
-Arg.register_range_check(int, lambda v, range: range[0] <= v <= range[1])
+Arg.register_range_check(int, _check_number_in_range)
 Arg.register_type_check(int)
-Arg.register_range_check(float, lambda v, range: range[0] <= v <= range[1])
+Arg.register_range_check(float, _check_number_in_range)
 Arg.register_type_check(float)
 Arg.register_type_check(bool)
 
