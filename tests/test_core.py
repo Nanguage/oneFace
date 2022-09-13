@@ -30,6 +30,11 @@ def test_arg_check():
         pass
     with pytest.raises(ArgsCheckError) as e:
         func(1)
+    @one(print_args=False)
+    def func(a: Arg(int)):
+        return a
+    with pytest.raises(ArgsCheckError) as e:
+        func(1.0)
     assert isinstance(e.value.args[0][0], TypeError)
 
 
@@ -62,7 +67,7 @@ def test_class_method_arg_check():
         def __init__(self, a):
             self.a = a
         
-        @one
+        @one(print_args=False)
         def mth1(self, b: Arg(float, [0, 1])):
             return self.a + b
 
@@ -99,8 +104,22 @@ def test_docstring():
     assert func1.__doc__ == "test"
 
 
+def test_implicit():
+    @one(print_args=False)
+    def func(a: int):
+        return a + 1
+    assert func(1) == 2
+    with pytest.raises(ArgsCheckError):
+        func(1.0)
+    @one(print_args=False)
+    def func(a: Arg[int, [0, 10]], b: Arg[int, [0, 10]]):
+        return a + b
+    assert func(10, 10) == 20
+
+
 if __name__ == "__main__":
-    test_arg_check()
+    #test_arg_check()
     #test_arg_register()
     #test_print_args()
     #test_class_method_arg_check()
+    test_implicit()

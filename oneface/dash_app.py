@@ -285,7 +285,7 @@ class DropdownInputItem(InputItem):
     def get_input(self):
         return dcc.Dropdown(
             self.range,
-            value=(self.default or range[0])
+            value=(self.default or self.range[0])
         )
 
 
@@ -293,7 +293,7 @@ class MultiDropdownInputItem(InputItem):
     def get_input(self):
         return dcc.Dropdown(
             self.range,
-            value=(self.default or range[0]), multi=True
+            value=(self.default or self.range[0]), multi=True
         )
 
 

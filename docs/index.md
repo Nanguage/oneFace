@@ -33,15 +33,16 @@ $ pip install "oneface[pyside2]"  # for example
 
 ## Example
 
-oneFace is an easy way to create interfaces in Python, just decorate your function and mark the type and range of the arguments:
+oneFace is an easy way to create interfaces in Python,
+just decorate your function and mark the **type** and **range** of the arguments:
 
 ```Python
 from oneface import one, Arg
 
 @one
-def bmi(name: Arg(str),
-        height: Arg(float, [100, 250]) = 160,
-        weight: Arg(float, [0, 300]) = 50.0):
+def bmi(name: str,
+        height: Arg[float, [100, 250]] = 160,
+        weight: Arg[float, [0, 300]] = 50.0):
     BMI = weight / (height / 100) ** 2
     print(f"Hi {name}. Your BMI is: {BMI}")
     return BMI

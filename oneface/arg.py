@@ -7,8 +7,15 @@ class Empty:
     pass
 
 
-class Arg():
+class ArgMeta(type):
+    def __getitem__(self, args):
+        if isinstance(args, tuple):
+            return Arg(*args)
+        else:
+            return Arg(args)
 
+
+class Arg(metaclass=ArgMeta):
     type_to_range_checker = {}
     type_to_type_checker = {}
 
@@ -34,7 +41,7 @@ class Arg():
             if not self.type_checker(val, self.type):
                 raise TypeError(
                     f"Input value {val} is not in valid type({self.type})")
-        if self.range_checker is not None:
+        if (self.range is not None) and (self.range_checker is not None):
             if (not self.range_checker(val, self.range)):
                 raise ValueError(f"Input value {val} is not in a valid range.")
 
@@ -75,4 +82,3 @@ def get_func_argobjs(func: T.Callable) -> T.OrderedDict[str, Arg]:
             arg.default = p.default
         args[n] = arg
     return args
-

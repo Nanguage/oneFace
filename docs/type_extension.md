@@ -23,7 +23,7 @@ This will allow oneface to check the type of the input parameter to make sure it
 
 ```Python
 @one
-def print_person(person: Arg(Person)):
+def print_person(person: Person):
     print(f"{person.name} is {person.age} years old.")
 
 >>> print_person(["Tom", 10])  # Incorrect input type
@@ -83,7 +83,7 @@ Mark the range in argument annotation:
 
 ```Python
 @one
-def print_person(person: Arg(Person, [0, 100])):
+def print_person(person: Arg[Person, [0, 100]]):
     print(f"{person.name} is {person.age} years old.")
 ```
 

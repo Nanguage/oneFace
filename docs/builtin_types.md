@@ -20,14 +20,14 @@ from oneface.core import one, Arg
 from oneface.types import (Selection, SubSet, InputPath, OutputPath)
 
 @one
-def func(in_path: Arg(InputPath),
-         out_path: Arg(OutputPath) = "./test",
-         a: Arg(int, [0, 10], text="parameter (a)") = 10,
-         b: Arg(float, [0, 1]) = 0.1,
-         c: Arg(str) = "aaaa",
-         d: Arg(bool) = False,
-         e: Arg(Selection, ["a", "b", "c"]) = "a",
-         f: Arg(SubSet, ["a", "b", "c"]) = ["a"]):
+def func(in_path: InputPath,
+         out_path: OutputPath = "./test",
+         a: Arg[int, [0, 10], text="parameter (a)"] = 10,
+         b: Arg[float, [0, 1]] = 0.1,
+         c: Arg[str] = "aaaa",
+         d: Arg[bool] = False,
+         e: Arg[Selection, ["a", "b", "c"]] = "a",
+         f: Arg[SubSet, ["a", "b", "c"]] = ["a"]):
     print(in_path, out_path)
     print(a, b, c, d, e, f)
     return a + b

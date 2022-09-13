@@ -7,7 +7,16 @@ Using `one` decorate the function, and use `Arg` mark type and range of the argu
 from oneface import one, Arg
 
 @one
-def print_person(name: Arg(str), age: Arg(int, [0, 120])):
+def print_person(name: str, age: Arg[int, [0, 120]]):
+    return f"{name} is {age} years old."
+```
+
+**Note**: `Arg(type, range)` is same to `Arg[type, range]`.
+
+```Python
+# This is same to the previous defination
+@one
+def print_person(name: str, age: Arg(int, [0, 120])):
     return f"{name} is {age} years old."
 ```
 
@@ -51,7 +60,7 @@ By default, oneface will pretty print the input arguments with a table. It can b
 
 ```Python
 @one(print_args=False)
-def print_person(name: Arg(str), age: Arg(int, [0, 120])):
+def print_person(name: str, age: Arg[int, [0, 120]]):
     return f"{name} is {age} years old."
 
 >>> print_person("Tom", 20)
@@ -66,7 +75,7 @@ Create a python module `print_person.py`:
 from oneface import one, Arg
 
 @one
-def print_person(name: Arg(str), age: Arg(int, [0, 120])):
+def print_person(name: str, age: Arg[int, [0, 120]]):
     return f"{name} is {age} years old."
 
 print_person.cli()

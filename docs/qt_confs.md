@@ -8,9 +8,9 @@ By default the window name is the name of the function, but it can be changed by
 from oneface import one, Arg
 
 @one
-def bmi(name: Arg(str),
-        height: Arg(float, [100, 250]) = 160,
-        weight: Arg(float, [0, 300]) = 50.0):
+def bmi(name: str,
+        height: Arg[float, [100, 250]] = 160,
+        weight: Arg[float, [0, 300]] = 50.0):
     BMI = weight / (height / 100) ** 2
     print(f"Hi {name}. Your BMI is: {BMI}")
     return BMI
@@ -27,8 +27,8 @@ By default, argument label is the variable name. But it can be explicitly set by
 ```Python
 @one
 def bmi(name: Arg(str, text="NAME"),  # explicitly label setting
-        height: Arg(float, [100, 250]) = 160,
-        weight: Arg(float, [0, 300]) = 50.0):
+        height: Arg[float, [100, 250]] = 160,
+        weight: Arg[float, [0, 300]] = 50.0):
     BMI = weight / (height / 100) ** 2
     print(f"Hi {name}. Your BMI is: {BMI}")
     return BMI

@@ -9,9 +9,9 @@ The `show_console` parameter is used to control whether it is displayed.
 from oneface import one, Arg
 
 @one
-def bmi(name: Arg(str) = "Tom",
-        height: Arg(float, [100, 250]) = 160,
-        weight: Arg(float, [0, 300]) = 50.0):
+def bmi(name: str = "Tom",
+        height: Arg[float, [100, 250]] = 160,
+        weight: Arg[float, [0, 300]] = 50.0):
     BMI = weight / (height / 100) ** 2
     print(f"Hi {name}. Your BMI is: {BMI}")
     return BMI
