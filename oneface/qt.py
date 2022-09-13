@@ -37,7 +37,12 @@ class GUI():
         self.result = None
         self.app = QtWidgets.QApplication([])
         self.main_window = QtWidgets.QMainWindow()
-        name = name or func.__name__
+        if name is not None:
+            name = name
+        elif hasattr(func, "name"):
+            name = func.name
+        else:
+            name = func.__name__
         self.main_window.setWindowTitle(name)
         if size:
             self.main_window.setFixedSize(*size)

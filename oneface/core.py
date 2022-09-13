@@ -51,7 +51,12 @@ class One(object):
         self.func = func
         functools.update_wrapper(self, func)
         self.arg_objs = get_func_argobjs(func)
-        self.name = name if name is not None else func.__name__
+        if name is not None:
+            self.name = name
+        elif hasattr(func, "name"):
+            self.name = func.name
+        else:
+            self.name = func.__name__
         self.is_print_args = print_args
         self.table = None
 

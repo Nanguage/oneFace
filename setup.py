@@ -40,6 +40,7 @@ def get_install_requires():
         "rich",
         "fire",
         "qtpy",
+        "pyYAML",
     ]
     return requirements
 

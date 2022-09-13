@@ -33,7 +33,12 @@ class App(object):
             result_show_type="text",
             **server_args):
         self.func = func
-        self.name = name
+        if name is not None:
+            self.name = name
+        elif hasattr(func, "name"):
+            self.name = func.name
+        else:
+            self.name = func.__name__
         self.show_console = show_console
         self.console_interval = console_interval
         self.interactive = interactive
@@ -242,9 +247,10 @@ class InputItem(object):
 
 class IntInputItem(InputItem):
     def get_input(self):
+        _range = self.range or [0, 100]
         return dcc.Input(
-            min=self.range[0], max=self.range[1], type="number", step=1,
-            value=(self.default or self.range[0]), style={
+            min=_range[0], max=_range[1], type="number", step=1,
+            value=(self.default or _range[0]), style={
                 'width': "100%",
             }
         )
@@ -252,9 +258,10 @@ class IntInputItem(InputItem):
 
 class FloatInputItem(InputItem):
     def get_input(self):
+        _range = self.range or [0, 100]
         return dcc.Slider(
-            self.range[0], self.range[1], step=None,
-            value=(self.default or self.range[0])
+            _range[0], _range[1], step=None,
+            value=(self.default or _range[0])
         )
 
 

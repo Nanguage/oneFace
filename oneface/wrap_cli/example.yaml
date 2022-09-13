@@ -1,17 +1,18 @@
 # The name of your app
-name: open_browser
+name: add
 
 # The target command to be wraped.
 # Use '{}' to mark all arguments.
-command: python -m webbrowser {is_tab} {url} 
+command: python -c "print({a} + {b})" 
 
 # List all argument's type and range
 arguments:
 
-  is_tab:
-    type: bool
-    true_content: "-t"
-    false_content: ""
+  a:
+    type: int
+    range: [0, 10]
 
-  url:
-    type: str
+  b:
+    type: int
+    range: [-10, 10]
+    default: 0

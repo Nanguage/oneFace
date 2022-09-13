@@ -2,3 +2,4 @@ graft docs/
 
 include LICENSE
 include README.md
+include oneface/wrap_cli/example.yaml
