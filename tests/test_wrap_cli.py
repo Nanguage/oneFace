@@ -1,6 +1,6 @@
+import contextlib
+from io import StringIO
 import os.path as osp
-
-from yaml import load
 
 from oneface.wrap_cli.wrap import WrapCLI, load_config, parse_arg_objs
 
@@ -26,4 +26,29 @@ def test_wrap_cli():
     wrap = WrapCLI(conf)
     wrap(1, 2)
     assert wrap.__signature__ is not None
+
+
+def test_retcode():
+    wrap = WrapCLI.from_config_file(example_yaml)
+    assert 0 == wrap(40, 2)
+
+
+def test_stdout():
+    wrap = WrapCLI.from_config_file(example_yaml, print_cmd=False)
+    console_buffer = StringIO()
+    with contextlib.redirect_stdout(console_buffer):
+        wrap(40, 2)
+    console_buffer.seek(0)
+    content = console_buffer.read()
+    assert content.strip() == "42"
+
+
+def test_stderr():
+    wrap = WrapCLI.from_config_file(example_yaml, print_cmd=False)
+    console_buffer = StringIO()
+    with contextlib.redirect_stderr(console_buffer):
+        wrap(40, "aaa")
+    console_buffer.seek(0)
+    content = console_buffer.read()
+    assert "NameError" in content
 

@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from ctypes import ArgumentError
+import sys
 import typing as T
 import inspect
 import re
@@ -17,18 +18,26 @@ def load_config(path: str) -> dict:
     return conf
 
 
+def extrace_key(d: dict, key, default) -> T.Any:
+    if key in d:
+        return d.pop(key)
+    else:
+        return default
+
+
 def parse_arg_objs(config: dict) -> T.OrderedDict[str, Arg]:
     args = OrderedDict()
     args_conf: dict = config['arguments']
     for n, p_conf in args_conf.items():
-        p_conf: dict
-        _tp = p_conf.get('type', 'str')
-        _default = p_conf.get('default', Empty)
-        _range = p_conf.get('range', None)
+        p_conf: dict = p_conf.copy()
+        _tp = extrace_key(p_conf, 'type', 'str')
+        _default = extrace_key(p_conf, 'default', Empty)
+        _range = extrace_key(p_conf, 'range', None)
         arg = Arg(
             type=eval(_tp),
             range=_range,
             default=_default,
+            **p_conf
         )
         args[n] = arg
     return args
@@ -74,28 +83,46 @@ def run_process(exe):
     while(True):
         # returns None while subprocess is running
         retcode = p.poll()
-        line = p.stdout.readline()
-        yield line
+        out_line = p.stdout.readline()
+        if out_line:
+            yield 'stdout', out_line.decode()
+        err_line = p.stderr.readline()
+        if err_line:
+            yield 'stderr', err_line.decode()
         if retcode is not None:
             break
+    return retcode
 
 
 class WrapCLI(object):
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, print_cmd=True):
         self.config = config
         self.name = self.config['name']
         self.arg_objs = parse_arg_objs(config)
         self.command = Command(config['command'])
         self.command.check_placeholder(list(self.arg_objs.keys()))
         self.__signature__ = compose_signature(self.arg_objs)
+        self.is_print_cmd = print_cmd
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> int:
         vals = parse_pass_in(args, kwargs, self.arg_objs)
         cmd_str = self.command.format(vals)
-        for line in run_process(cmd_str):
-            if line:
-                print(line.decode().rstrip("\n"))
+        if self.is_print_cmd:
+            print(f"Run command: {cmd_str}")
+        g = run_process(cmd_str)
+        retcode = None
+        while True:
+            try:
+                src, line = next(g)
+                if src == 'stdout':
+                    print(line.rstrip("\n"))
+                else:
+                    print(line.rsplit("\n"), file=sys.stderr)
+            except StopIteration as e:
+                retcode = e.value
+                break
+        return retcode
 
     @staticmethod
-    def from_config_file(path: str) -> "WrapCLI":
-        return WrapCLI(load_config(path))
+    def from_config_file(path: str, *args, **kwargs) -> "WrapCLI":
+        return WrapCLI(load_config(path), *args, **kwargs)

@@ -19,15 +19,22 @@ def gen(target_path: str = "./oneface.yaml"):
         f.write(content)
 
 
-InterfaceTypes = T.Literal["cli", "qt", "dash"]
+InterfaceTypes = T.Literal["cli", "qt_gui", "dash_app"]
 
 
-def run(config_path: str, interface: InterfaceTypes, **kwargs):
-    wrap = WrapCLI.from_config_file(config_path)
+def run(
+        config_path: str, interface: InterfaceTypes,
+        print_cmd: bool, **kwargs):
+    """
+    :param config_path: The path to your config(.yaml) file.
+    :param interface: The interface type, 'qt_gui' | 'dash_app' | 'cli'
+    :param print_cmd: Print the actually executed command or not.
+    """
+    wrap = WrapCLI.from_config_file(config_path, print_cmd=print_cmd)
     of = one(wrap, **kwargs)
-    if interface == "qt":
+    if interface == "qt_gui":
         of.qt_gui()
-    elif interface == "dash":
+    elif interface == "dash_app":
         of.dash_app()
     else:
         of.cli()
