@@ -52,3 +52,19 @@ def test_stderr():
     content = console_buffer.read()
     assert "NameError" in content
 
+
+def test_replace():
+    conf = {
+        "name": "test",
+        "command": "python {c} 'print(1)'",
+        "arguments": {
+            "c": {
+                "type": "bool",
+                "true_insert": "-c",
+                "default": True
+            },
+        },
+    }
+    wrap = WrapCLI(conf, print_cmd=True)
+    assert 0 == wrap(True)
+

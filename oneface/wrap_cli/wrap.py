@@ -77,6 +77,17 @@ class Command(object):
         return cmd
 
 
+def replace_vals(vals: dict, arg_objs: T.OrderedDict[str, Arg]) -> dict:
+    vals = vals.copy()
+    for key, val in vals.items():
+        arg_obj = arg_objs[key]
+        if (val is True) and ('true_insert' in arg_obj.kwargs):
+            vals[key] = arg_obj.kwargs['true_insert']
+        if (val is False) and ('false_insert' in arg_obj.kwargs):
+            vals[key] = arg_obj.kwargs['false_insert']
+    return vals
+
+
 def run_process(exe):
     # https://stackoverflow.com/a/4760274/8500469
     p = subp.Popen(exe, stdout=subp.PIPE, stderr=subp.PIPE)
@@ -106,6 +117,7 @@ class WrapCLI(object):
 
     def __call__(self, *args, **kwargs) -> int:
         vals = parse_pass_in(args, kwargs, self.arg_objs)
+        vals = replace_vals(vals, self.arg_objs)
         cmd_str = self.command.format(vals)
         if self.is_print_cmd:
             print(f"Run command: {cmd_str}")

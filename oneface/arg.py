@@ -22,8 +22,8 @@ class Arg(metaclass=ArgMeta):
     def __init__(self, type: type = str, range=None, default=Empty, **kwargs):
         self.type = type
         self.range = range
-        self.kwargs = kwargs
         self.default = default
+        self.kwargs = kwargs
 
     @property
     def type_checker(self):
