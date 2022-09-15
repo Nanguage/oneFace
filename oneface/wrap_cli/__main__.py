@@ -1,3 +1,4 @@
+import sys
 import typing as T
 import os.path as osp
 
@@ -24,7 +25,7 @@ InterfaceTypes = T.Literal["cli", "qt_gui", "dash_app"]
 
 def run(
         config_path: str, interface: InterfaceTypes,
-        print_cmd: bool, **kwargs):
+        print_cmd: bool = True, **kwargs):
     """
     :param config_path: The path to your config(.yaml) file.
     :param interface: The interface type, 'qt_gui' | 'dash_app' | 'cli'
@@ -33,11 +34,12 @@ def run(
     wrap = WrapCLI.from_config_file(config_path, print_cmd=print_cmd)
     of = one(wrap, **kwargs)
     if interface == "qt_gui":
-        of.qt_gui()
+        ret_code = of.qt_gui()
     elif interface == "dash_app":
-        of.dash_app()
+        ret_code = of.dash_app()
     else:
-        of.cli()
+        ret_code = of.cli()
+    sys.exit(ret_code)
 
 
 if __name__ == "__main__":

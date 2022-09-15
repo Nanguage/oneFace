@@ -68,3 +68,20 @@ def test_replace():
     wrap = WrapCLI(conf, print_cmd=True)
     assert 0 == wrap(True)
 
+
+def test_stdout_block():
+    conf = {
+        "name": "test",
+        "command": "python {v} -c 'print(1)'",
+        "arguments": {
+            "v": {
+                "type": "bool",
+                "true_insert": "-v",
+                "default": True
+            },
+        },
+    }
+    wrap = WrapCLI(conf, print_cmd=True)
+    console_buffer = StringIO()
+    with contextlib.redirect_stderr(console_buffer):
+        assert 0 == wrap(True)
