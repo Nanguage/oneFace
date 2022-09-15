@@ -52,6 +52,7 @@ These code will generate the following interfaces:
 | ---- | -- | ---- |
 | ![CLI](./docs/imgs/bmi_cli.png) | ![Qt](./docs/imgs/bmi_qt.png) | ![Dash](./docs/imgs/bmi_dash.png) |
 
+### Wrap command line program
 
 Or you can wrap a command line using a config file:
 

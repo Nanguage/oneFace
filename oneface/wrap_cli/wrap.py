@@ -94,7 +94,7 @@ def replace_vals(vals: dict, arg_objs: T.OrderedDict[str, Arg]) -> dict:
 def run_process(exe):
     # https://stackoverflow.com/a/4760274/8500469
     p = subp.Popen(exe, stdout=subp.PIPE, stderr=subp.PIPE)
-    while(True):
+    while True:
         # returns None while subprocess is running
         retcode = p.poll()
         out_line = p.stdout.readline()
