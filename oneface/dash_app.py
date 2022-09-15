@@ -140,10 +140,12 @@ class App(object):
         deco = app.callback(output, *inputs)
         return deco
 
-    def get_dash_app(self):
+    def get_dash_app(self, *args, **kwargs):
         name = self.name or self.func.__name__
         css = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-        app = Dash(name, external_stylesheets=css)
+        if 'external_stylesheets' not in kwargs:
+            kwargs['external_stylesheets'] = css
+        app = Dash(name, *args, **kwargs)
         app.layout = self.get_layout()
         console_buffer = StringIO()
 
