@@ -12,7 +12,7 @@ FILE_DIR = osp.dirname(osp.abspath(__file__))
 EXAMPLE_FILE = osp.join(FILE_DIR, "example.yaml")
 
 
-def gen(target_path: str = "./oneface.yaml"):
+def gen(target_path: str = "./example.yaml"):
     print(f"Generate an example config file in: {target_path}")
     with open(EXAMPLE_FILE) as f:
         content = f.read()
