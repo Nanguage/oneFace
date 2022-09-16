@@ -1,3 +1,4 @@
+import typing as T
 import contextlib
 import functools
 from io import StringIO
@@ -22,8 +23,8 @@ def app(func=None, **kwargs):
 
 
 class App(object):
-    type_to_widget_constructor = {}
-    convert_types = {}
+    type_to_widget_constructor: T.Dict[str, "InputItem"] = {}
+    convert_types: T.Dict[str, T.Callable] = {}
 
     def __init__(
             self, func, name=None,
@@ -45,20 +46,17 @@ class App(object):
         self.init_run = init_run
         self.result_show_type = result_show_type
         self.server_args = server_args
-        self.input_names = None
-        self.input_types = None
-        self.input_attrs = None
-        self.result = None
-        self.dash_app = self.get_dash_app()
+        self.input_names: T.Optional[T.List[str]] = None
+        self.input_types: T.Optional[T.List[T.Type]] = None
+        self.input_attrs: T.Optional[T.List[dict]] = None
+        self.result: T.Optional[T.Any] = None
+        self.dash_app: T.Optional[Dash] = None
 
     def get_layout(self):
-        widgets, names, types, attrs = self.parse_args()
-        self.input_names = names
-        self.input_types = types
-        self.input_attrs = attrs
+        input_widgets = self.parse_args()
         sub_nodes = [
             html.H3("Arguments"),
-            *widgets,
+            *input_widgets,
             html.Br(),
             html.Button("Run", id="run-btn"),
             html.Div("", style={"height": "20px"}),
@@ -90,23 +88,28 @@ class App(object):
             visdcc.Run_js(id="jsscroll", run="")
         ]
 
-    def get_result_layout(self):
-        layout = [
+    def base_result_layout(self):
+        return [
             html.H3("Result"),
+            dcc.Store(id="out")
         ]
+
+    def get_result_layout(self):
+        layout = self.base_result_layout()
         if self.result_show_type == "text":
             layout += [
-                html.Div("", id="out"),
+                html.Div(id="show-text")
             ]
         elif self.result_show_type == "download":
             layout += [
-                html.Div("", id="out", style={'display': 'none'}),
                 html.Button("Download Result", id="res-download-btn"),
                 dcc.Download(id="res-download-index")
             ]
         return layout
 
-    def parse_args(self):
+    def parse_args(self) -> T.List["html.Div"]:
+        """Parse target function's arguments,
+        return a list of input widgets."""
         widgets, names, types, attrs = [], [], [], []
         arg_objs = get_func_argobjs(self.func)
         for n, a in arg_objs.items():
@@ -121,9 +124,32 @@ class App(object):
             names.append(n)
             types.append(a.type)
             attrs.append(attr)
-        return widgets, names, types, attrs
+        self.input_names = names
+        self.input_types = types
+        self.input_attrs = attrs
+        return widgets
 
-    def get_run_callback_decorator(self, app):
+    def get_dash_app(self, *args, **kwargs):
+        name = self.name or self.func.__name__
+        css = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+        if 'external_stylesheets' not in kwargs:
+            kwargs['external_stylesheets'] = css
+        app = Dash(name, *args, **kwargs)
+        app.layout = self.get_layout()
+        self.add_callbacks(app)
+        return app
+
+    def add_callbacks(self, app: "Dash"):
+        self.add_run_callbacks(app)
+        self.add_result_callbacks(app)
+
+    def add_result_callbacks(self, app: "Dash"):
+        if self.result_show_type == "download":
+            self.add_download_callbacks(app)
+        elif self.result_show_type == "text":
+            self.add_text_callback(app)
+
+    def get_run_callback_decorator(self, app: "Dash"):
         inputs = [Input("run-btn", 'n_clicks')]
         for i, n in enumerate(self.input_names):
             is_interactive = (
@@ -136,17 +162,11 @@ class App(object):
             else:
                 input = State(id_, "value")
             inputs.append(input)
-        output = Output("out", "children")
+        output = Output("out", "data")
         deco = app.callback(output, *inputs)
         return deco
 
-    def get_dash_app(self, *args, **kwargs):
-        name = self.name or self.func.__name__
-        css = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-        if 'external_stylesheets' not in kwargs:
-            kwargs['external_stylesheets'] = css
-        app = Dash(name, *args, **kwargs)
-        app.layout = self.get_layout()
+    def add_run_callbacks(self, app):
         console_buffer = StringIO()
 
         @self.get_run_callback_decorator(app)
@@ -166,11 +186,6 @@ class App(object):
 
         if self.show_console:
             self.add_console_callbacks(app, console_buffer)
-
-        if self.result_show_type == "download":
-            self.add_download_callbacks(app)
-
-        return app
 
     def add_console_callbacks(self, app, console_buffer):
         @app.callback(
@@ -201,7 +216,14 @@ class App(object):
             doc_cache = doc
             return cmd
 
-    def add_download_callbacks(self, app):
+    def add_text_callback(self, app: "Dash"):
+        @app.callback(
+            Output("show-text", "children"),
+            Input("out", "data"))
+        def show(text):
+            return text
+
+    def add_download_callbacks(self, app: "Dash"):
         @app.callback(
             Output("res-download-index", "data"),
             Input("res-download-btn", "n_clicks"),
@@ -220,6 +242,7 @@ class App(object):
         cls.convert_types[type.__name__] = converter
 
     def __call__(self):
+        self.dash_app = self.get_dash_app()
         self.dash_app.run_server(**self.server_args)
 
 

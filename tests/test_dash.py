@@ -8,7 +8,7 @@ def test_app_create():
     def func(a: Arg(int, [0, 10]), b: Arg(float, [0, 5])):
         return a + b
     
-    assert func.dash_app is not None
+    assert func.get_dash_app() is not None
     assert func.input_names == ['a', 'b']
     assert func.input_types == [int, float]
 
@@ -20,15 +20,17 @@ def test_field_default_value():
              b: int = 20):
         return a + b
 
-    assert 0 == func.dash_app.layout.children[1].children[1].value
-    assert 20 == func.dash_app.layout.children[2].children[1].value
+    dash_app = func.get_dash_app()
+    assert 0 == dash_app.layout.children[1].children[1].value
+    assert 20 == dash_app.layout.children[2].children[1].value
 
     @app
     @one
     def func1(a: bool):
         return a
 
-    assert 'True' == func1.dash_app.layout.children[1].children[1].value
+    dash_app = func1.get_dash_app()
+    assert 'True' == dash_app.layout.children[1].children[1].value
 
 
 def test_download_type():
@@ -37,4 +39,4 @@ def test_download_type():
     def func(a: str):
         return ""
 
-    assert func.dash_app is not None
+    assert func.get_dash_app is not None
