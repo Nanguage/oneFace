@@ -250,9 +250,10 @@ class InputItem(object):
 class IntInputItem(InputItem):
     def get_input(self):
         _range = self.range or [0, 100]
+        _default = _range[0] if (self.default is None) else self.default
         return dcc.Input(
             min=_range[0], max=_range[1], type="number", step=1,
-            value=(self.default or _range[0]), style={
+            value=_default, style={
                 'width': "100%",
             }
         )
@@ -261,9 +262,10 @@ class IntInputItem(InputItem):
 class FloatInputItem(InputItem):
     def get_input(self):
         _range = self.range or [0, 100]
+        _default = _range[0] if (self.default is None) else self.default
         return dcc.Slider(
             _range[0], _range[1], step=None,
-            value=(self.default or _range[0])
+            value=_default,
         )
 
 
@@ -284,9 +286,10 @@ class StrInputItem(InputItem):
 
 class BoolInputItem(InputItem):
     def get_input(self):
+        _default = True if self.default is None else self.default
         return dcc.RadioItems(
             ["True", "False"],
-            value=(str(self.default) or "True")
+            value=str(_default)
         )
 
 

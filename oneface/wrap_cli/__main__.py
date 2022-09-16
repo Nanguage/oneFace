@@ -32,11 +32,12 @@ def run(
     :param print_cmd: Print the actually executed command or not.
     """
     wrap = WrapCLI.from_config_file(config_path, print_cmd=print_cmd)
+    config = wrap.config
     of = one(wrap, **kwargs)
     if interface == "qt_gui":
-        ret_code = of.qt_gui()
+        ret_code = of.qt_gui(**config.get('qt_config', {}))
     elif interface == "dash_app":
-        ret_code = of.dash_app()
+        ret_code = of.dash_app(**config.get('dash_config', {}))
     else:
         ret_code = of.cli()
     sys.exit(ret_code)

@@ -16,3 +16,15 @@ arguments:
     type: int
     range: [-10, 10]
     default: 0
+
+
+# Interface specific config
+# These parameters will pass to the interface
+qt_config:
+  # qt related config
+  run_once: false
+
+dash_config:
+  # Dash related config
+  console_interval: 2000
+
