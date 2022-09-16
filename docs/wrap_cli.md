@@ -54,7 +54,7 @@ $ python -m oneface.wrap_cli run example.yaml dash_app
 ```
 
 
-## Command insert
+## Flag insertion
 
 Extra string can insert to the actually executed command when the
 parameter is a `bool` type. It's useful when the command contains some

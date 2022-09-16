@@ -23,7 +23,6 @@ def test_field_default_value():
     assert 0 == func.dash_app.layout.children[1].children[1].value
     assert 20 == func.dash_app.layout.children[2].children[1].value
 
-
     @app
     @one
     def func1(a: bool):
@@ -31,3 +30,11 @@ def test_field_default_value():
 
     assert 'True' == func1.dash_app.layout.children[1].children[1].value
 
+
+def test_download_type():
+    @app(result_type="download")
+    @one
+    def func(a: str):
+        return ""
+
+    assert func.dash_app is not None
