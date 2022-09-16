@@ -1,3 +1,15 @@
+# Wrap command line
+
+Another way to use oneFace is to wrap a command line program.
+From the perspective of implementation, it's a layer of wrapping
+around the oneFace API. You can use a YAML configuration file to
+describe the command line to be wrapped and the type, range and default
+value of each parameter.
+
+Here is an example YAML file:
+
+```YAML
+# example.yaml
 # The name of your app
 name: add
 
@@ -26,3 +38,4 @@ qt_config:
 dash_config:
   # Dash related config
   console_interval: 2000
+```
