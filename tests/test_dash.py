@@ -33,10 +33,23 @@ def test_field_default_value():
     assert 'True' == dash_app.layout.children[1].children[1].value
 
 
-def test_download_type():
-    @app(result_type="download")
+def test_download_show_type():
+    @app(result_show_type="download")
     @one
     def func(a: str):
         return ""
 
-    assert func.get_dash_app is not None
+    dash_app = func.get_dash_app()
+    assert isinstance(dash_app.layout.children[-1], dcc.Download)
+
+
+def test_plotly_show_type():
+    @app(result_show_type="plotly")
+    @one
+    def func():
+        import plotly.express as px
+        fig = px.scatter(x=[0, 1, 2, 3, 4], y=[0, 1, 4, 9, 16])
+        return fig
+
+    dash_app = func.get_dash_app()
+    assert isinstance(dash_app.layout.children[-1], dcc.Graph)

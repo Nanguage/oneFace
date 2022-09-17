@@ -86,6 +86,16 @@ bmi.dash_app(interactive=True)
 By default, the `result_show_type` is `'text'`, which means that the result will be displayed in text.
 In addition, the results can also be presented in other forms:
 
+
+### Plotly figure type
+
+Dash app can integrate the plotly to drawing dynamic figures in HTML.
+By setting `result_show_type` to `'plotly'` and wrap a function return the plotly figure object,
+we can archieve this:
+
+```Python
+```
+
 ### Download type
 
 In many cases, the results of running a web application need to be downloaded as a file for the user.
@@ -109,6 +119,56 @@ bmi.dash_app(result_show_type="download")
 ```
 
 ![download_res_dash](./imgs/download_res_dash.gif)
+
+
+### Custom result type
+
+You can custom the dash app layout by inherit the `oneface.dash_app.App` class.
+For example we can create a app draw a random series:
+
+```Python
+# random_series.py
+from oneface.dash_app import App
+from oneface import Arg, one
+import numpy as np
+import plotly.express as px
+from dash import Dash, Output, Input, dcc
+
+
+class PlotSeries(App):
+    def __init__(self, func, **kwargs):
+        super().__init__(func, **kwargs)
+
+    def get_result_layout(self):
+        # override the result layout definition
+        layout = self.base_result_layout()
+        layout += [
+            dcc.Graph(id='line-plot')
+        ]
+        return layout
+
+    def add_result_callbacks(self, app: "Dash"):
+        # override the result callback definition
+        @app.callback(
+            Output("line-plot", "figure"),
+            Input("out", "data"),
+        )
+        def plot(val):
+            fig = px.line(val)
+            return fig
+
+@one
+def random_series(n: Arg[int, [0, 10000]] = 100):
+    return np.random.random(n) * 100
+
+
+p = PlotSeries(random_series, debug=True)
+p()
+```
+
+Run this script, we get:
+
+![random_series_dash_app](./imgs/random_series_dash_app.gif)
 
 ## Host and Port
 

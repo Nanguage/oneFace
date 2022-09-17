@@ -96,15 +96,24 @@ class App(object):
 
     def get_result_layout(self):
         layout = self.base_result_layout()
-        if self.result_show_type == "text":
+        show_type = self.result_show_type
+        if show_type == "text":
             layout += [
                 html.Div(id="show-text")
             ]
-        elif self.result_show_type == "download":
+        elif show_type == "download":
             layout += [
                 html.Button("Download Result", id="res-download-btn"),
                 dcc.Download(id="res-download-index")
             ]
+        elif show_type == "plotly":
+            layout += [
+                dcc.Graph(id='plotly-figure')
+            ]
+        else:
+            raise NotImplementedError(
+                f"The layout for result_show_type '{show_type}'"
+                "is not defined")
         return layout
 
     def parse_args(self) -> T.List["html.Div"]:
@@ -144,10 +153,18 @@ class App(object):
         self.add_result_callbacks(app)
 
     def add_result_callbacks(self, app: "Dash"):
-        if self.result_show_type == "download":
-            self.add_download_callbacks(app)
-        elif self.result_show_type == "text":
+        show_type = self.result_show_type
+        if show_type == "text":
             self.add_text_callback(app)
+        elif show_type == "download":
+            self.add_download_callbacks(app)
+        elif show_type == "plotly":
+            self.add_plotly_callbacks(app)
+        else:
+            raise NotImplementedError(
+                f"The callback for result_show_type '{show_type}'"
+                "is not defined."
+            )
 
     def get_run_callback_decorator(self, app: "Dash"):
         inputs = [Input("run-btn", 'n_clicks')]
@@ -230,6 +247,14 @@ class App(object):
             prevent_initial_call=True)
         def send_file(n_clicks):
             return dcc.send_file(self.result)
+
+    def add_plotly_callbacks(self, app: "Dash"):
+        @app.callback(
+            Output("plotly-figure", "figure"),
+            Input("out", "data"),
+        )
+        def show(data):
+            return data
 
     @classmethod
     def register_widget(cls, type, widget_constructor):
