@@ -1,5 +1,8 @@
 from oneface.dash_app import *
 from oneface.core import one, Arg
+from oneface.dash_app.embed import flask_route
+
+from dash import dcc
 
 
 def test_app_create():
@@ -53,3 +56,16 @@ def test_plotly_show_type():
 
     dash_app = func.get_dash_app()
     assert isinstance(dash_app.layout.children[-1], dcc.Graph)
+
+
+def test_embed():
+    from flask import Flask
+
+    server = Flask("test")
+
+    @flask_route(server, "/dash")
+    @app
+    @one
+    def func(name: str):
+        return name
+    
