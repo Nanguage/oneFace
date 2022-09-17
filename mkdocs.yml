@@ -13,6 +13,8 @@ nav:
     - Qt configs: qt_confs.md
     - Dash configs: dash_confs.md
   - Wrap command line: wrap_cli.md
+  - Embedding:
+    - dash_embed.md
 
 markdown_extensions:
   - pymdownx.highlight:
