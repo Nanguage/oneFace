@@ -94,7 +94,22 @@ By setting `result_show_type` to `'plotly'` and wrap a function return the plotl
 we can archieve this:
 
 ```Python
+from oneface import one, Arg
+import plotly.express as px
+import numpy as np
+
+@one
+def draw_random_points(n: Arg[int, [1, 10000]] = 100):
+    x, y = np.random.random(n), np.random.random(n)
+    fig = px.scatter(x=x, y=y)
+    return fig
+
+draw_random_points.dash_app(
+    result_show_type='plotly',
+    debug=True)
 ```
+
+![random_points_dash](./imgs/random_points_dash_app.gif)
 
 ### Download type
 
