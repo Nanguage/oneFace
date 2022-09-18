@@ -1,3 +1,4 @@
+import typing as T
 import functools
 from qtpy import QtWidgets
 from qtpy import QtCore
@@ -26,28 +27,38 @@ def gui(func=None, **kwargs):
     return GUI(func, **kwargs)
 
 
+def get_app():
+    app = QtWidgets.QApplication.instance()
+    if app is None:
+        app = QtWidgets.QApplication([])
+    return app
+
+
 class GUI():
 
     type_to_widget_constructor = {}
 
-    def __init__(self, func, name=None, size=None,
-                 run_once=True):
+    def __init__(
+            self,
+            func: T.Callable, name: T.Optional[str] = None,
+            size: T.Optional[T.List] = None,
+            run_once=True):
         self.func = func
         self.run_once = run_once
         self.result = None
-        self.app = QtWidgets.QApplication([])
-        self.main_window = QtWidgets.QMainWindow()
+        self.app = get_app()
         if name is not None:
-            name = name
+            self.name = name
         elif hasattr(func, "name"):
-            name = func.name
+            self.name = func.name
         else:
-            name = func.__name__
-        self.main_window.setWindowTitle(name)
-        if size:
-            self.main_window.setFixedSize(*size)
-        self.arg_widgets = {}
+            self.name = func.__name__
         self.window = QtWidgets.QWidget()
+        self.window._oneface_wrap = self
+        self.window.setWindowTitle(self.name)
+        if size:
+            self.window.setFixedSize(*size)
+        self.arg_widgets = {}
         self.layout = QtWidgets.QVBoxLayout()
         self.compose_ui()
         self.connect_events()
@@ -58,7 +69,6 @@ class GUI():
         self.layout.addWidget(self.run_btn)
         self.terminal = QtWidgets.QTextEdit()
         self.window.setLayout(self.layout)
-        self.main_window.setCentralWidget(self.window)
 
     def compose_arg_widgets(self, layout: QtWidgets.QVBoxLayout):
         arg_objs = get_func_argobjs(self.func)
@@ -86,9 +96,9 @@ class GUI():
     def run_func(self):
         kwargs = self.get_args()
         if self.run_once:
-            self.main_window.hide()
+            self.window.hide()
             self.result = self.func(**kwargs)
-            self.main_window.close()
+            self.window.close()
         else:
             thread = self.thread = QtCore.QThread()
             worker = self.worker = Worker(self.func, kwargs)
@@ -106,7 +116,7 @@ class GUI():
             thread.finished.connect(finish)
 
     def __call__(self):
-        self.main_window.show()
+        self.window.show()
         self.app.exec()
         return self.result
 

@@ -14,6 +14,7 @@ nav:
     - Dash configs: dash_confs.md
   - Wrap command line: wrap_cli.md
   - Embedding:
+    - qt_embed.md
     - dash_embed.md
 
 markdown_extensions:
