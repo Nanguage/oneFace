@@ -93,6 +93,7 @@ $ python -m oneface.wrap_cli run add.yaml qt_gui  # run Qt GUI app
 + Generate CLI, Qt GUI, Dash Web app from a python function or a command line.
 + Automatically check the type and range of input parameters and pretty print them.
 + Easy extension of parameter types and GUI widgets.
++ Support for embedding the generated interface into a parent application
 
 Detail usage see the [documentation](https://oneface.readthedocs.io/en/latest/).
 
