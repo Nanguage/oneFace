@@ -8,14 +8,15 @@ from ansi2html import Ansi2HTMLConverter
 import visdcc
 
 from ..types import (Selection, SubSet, InputPath, OutputPath)
-from ..arg import Empty, get_func_argobjs
+from ..arg import Empty, parse_func_args
 from .input_item import (
     InputItem, IntInputItem, FloatInputItem, StrInputItem, BoolInputItem,
     DropdownInputItem, MultiDropdownInputItem,
 )
+from ..utils import AllowWrapInstanceMethod
 
 
-class App(object):
+class App(AllowWrapInstanceMethod):
     type_to_widget_constructor: T.Dict[str, "InputItem"] = {}
     convert_types: T.Dict[str, T.Callable] = {}
 
@@ -113,7 +114,7 @@ class App(object):
         """Parse target function's arguments,
         return a list of input widgets."""
         widgets, names, types, attrs = [], [], [], []
-        arg_objs = get_func_argobjs(self.func)
+        arg_objs = parse_func_args(self.func)
         for n, a in arg_objs.items():
             if a.type is Empty:
                 continue

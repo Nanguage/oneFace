@@ -1,5 +1,6 @@
 from oneface.dash_app import *
-from oneface.core import one, Arg
+from oneface.core import one
+from oneface.arg import Arg
 from oneface.dash_app.embed import flask_route
 
 from dash import dcc
@@ -69,3 +70,22 @@ def test_embed():
     def func(name: str):
         return name
     
+
+def test_on_native_func():
+    @app
+    def func(a: int, b: float):
+        return a + b
+
+    assert func.get_dash_app() is not None
+    assert func.input_names == ['a', 'b']
+    assert func.input_types == [int, float]
+
+    class A():
+        @app
+        def mth1(self, name: str, weight: float):
+            return name, weight
+    
+    a = A()
+    assert a.mth1.get_dash_app() is not None
+    assert a.mth1.input_names == ['name', 'weight']
+    assert a.mth1.input_types == [str, float]

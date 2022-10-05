@@ -1,5 +1,6 @@
 import sys; sys.path.insert(0, "./")
 from oneface.core import *
+from oneface.check import *
 from oneface.qt import *
 
 import pytest
@@ -23,7 +24,7 @@ def test_int_with_default():
     @one
     def func(a: Arg(int, [0, 10]) = 1):
         return a
-    
+
     assert isinstance(func, GUI)
     kwargs = func.get_args()
     assert kwargs['a'] == 1
@@ -118,6 +119,22 @@ def test_inputpath_input():
     with pytest.raises(ArgsCheckError) as e:
         func.run_func()
     assert isinstance(e.value.args[0][0], ValueError)
+
+
+def test_on_native_func():
+    @gui
+    def func(a: int, b: float):
+        return a + b
+
+    assert isinstance(func, GUI)
+
+    class A():
+        @gui
+        def mth1(self, name: str, weight: float):
+            return name, weight
+
+    a = A()
+    assert isinstance(a.mth1, GUI)
 
 
 if __name__ == "__main__":

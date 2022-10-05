@@ -1,10 +1,11 @@
 from oneface.core import *
+from oneface.check import *
 
 import pytest
 
 
 def test_arg_check():
-    @one(print_args=False)
+    @check_args(print_args=False)
     def func(a: Arg(int, [0, 10]), b: Arg(float, [0, 1]), k=10):
         return a
     assert func(10, 0.3) == 10
@@ -25,12 +26,12 @@ def test_arg_check():
     assert isinstance(e.value.args[0][0], ValueError)
     assert isinstance(e.value.args[0][1], TypeError)
     func(2, 0.5)
-    @one(print_args=False)
+    @check_args(print_args=False)
     def func(a: Arg(bool)):
         pass
     with pytest.raises(ArgsCheckError) as e:
         func(1)
-    @one(print_args=False)
+    @check_args(print_args=False)
     def func(a: Arg(int)):
         return a
     with pytest.raises(ArgsCheckError) as e:
@@ -67,7 +68,7 @@ def test_class_method_arg_check():
         def __init__(self, a):
             self.a = a
         
-        @one(print_args=False)
+        @check_args(print_args=False)
         def mth1(self, b: Arg(float, [0, 1])):
             return self.a + b
 
@@ -85,7 +86,7 @@ def test_class_method_arg_check():
 def test_parse_pass_in():
     def f1(a, b, c=1, d=2):
         pass
-    arg_objs = get_func_argobjs(f1)
+    arg_objs = parse_func_args(f1)
     vals = parse_pass_in((1, 2), {'d': 10}, arg_objs)
     assert (vals['a'] == 1) and (vals['b'] == 2) and (vals['c'] == 1) and (vals['d'] == 10)
     vals = parse_pass_in((1, 2, 3), {}, arg_objs)

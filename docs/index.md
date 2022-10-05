@@ -7,7 +7,7 @@ oneFace is a Python library for automatically generating multiple interfaces(CLI
 + Generate CLI, Qt GUI, Dash Web app from a python function or a command line.
 + Automatically check the type and range of input parameters and pretty print them.
 + Easy extension of parameter types and GUI widgets.
-+ Support for embedding the generated interface into a parent application
++ Support for embedding the generated interface into a parent application.
 
 
 ## Installation

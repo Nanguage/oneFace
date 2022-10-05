@@ -1,5 +1,6 @@
 from oneface.types import *
-from oneface.core import one, Arg, ArgsCheckError
+from oneface.core import one
+from oneface.check import Arg, ArgsCheckError
 
 import pytest
 

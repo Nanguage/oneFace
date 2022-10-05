@@ -69,7 +69,7 @@ Arg.register_type_check(float)
 Arg.register_type_check(bool)
 
 
-def get_func_argobjs(func: T.Callable) -> T.OrderedDict[str, Arg]:
+def parse_func_args(func: T.Callable) -> T.OrderedDict[str, Arg]:
     args = OrderedDict()
     sig = inspect.signature(func)
     for n, p in sig.parameters.items():

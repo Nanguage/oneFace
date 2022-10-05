@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from oneface.core import Arg
+from oneface.arg import Arg
 
 
 class ArgType(object):

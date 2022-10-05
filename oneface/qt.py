@@ -4,7 +4,8 @@ from qtpy import QtWidgets
 from qtpy import QtCore
 
 from .types import (InputPath, OutputPath, Selection, SubSet)
-from .arg import Empty, get_func_argobjs
+from .arg import Empty, parse_func_args
+from .utils import AllowWrapInstanceMethod
 
 
 class Worker(QtCore.QObject):
@@ -34,7 +35,7 @@ def get_app():
     return app
 
 
-class GUI():
+class GUI(AllowWrapInstanceMethod):
 
     type_to_widget_constructor = {}
 
@@ -71,7 +72,7 @@ class GUI():
         self.window.setLayout(self.layout)
 
     def compose_arg_widgets(self, layout: QtWidgets.QVBoxLayout):
-        arg_objs = get_func_argobjs(self.func)
+        arg_objs = parse_func_args(self.func)
         for n, a in arg_objs.items():
             if a.type is Empty:
                 continue

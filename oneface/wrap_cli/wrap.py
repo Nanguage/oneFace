@@ -12,7 +12,7 @@ from queue import Queue
 import yaml
 
 from ..arg import Arg, Empty
-from ..core import parse_pass_in
+from ..check import parse_pass_in
 
 
 def load_config(path: str) -> dict:

@@ -2,6 +2,7 @@ import sys
 sys.path.insert(0, "./")
 import subprocess
 from oneface.core import *
+from oneface.arg import Arg
 import pytest
 
 
