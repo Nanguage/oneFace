@@ -91,23 +91,6 @@ def replace_vals(vals: dict, arg_objs: T.OrderedDict[str, Arg]) -> dict:
     return vals
 
 
-def run_process(exe):
-    # https://stackoverflow.com/a/4760274/8500469
-    p = subp.Popen(exe, stdout=subp.PIPE, stderr=subp.PIPE)
-    while True:
-        # returns None while subprocess is running
-        retcode = p.poll()
-        out_line = p.stdout.readline()
-        if out_line:
-            yield 'stdout', out_line.decode()
-        err_line = p.stderr.readline()
-        if err_line:
-            yield 'stderr', err_line.decode()
-        if retcode is not None:
-            break
-    return retcode
-
-
 class ProcessRunner(object):
     """Subprocess runner, allow stream stdout and stderr."""
     def __init__(self, command: str) -> None:
@@ -146,7 +129,8 @@ class ProcessRunner(object):
                     src = "stdout"
                 else:
                     src = "stderr"
-                yield src, line.decode()
+                line_decoded: str = line.decode()
+                yield src, line_decoded
         return self.proc.wait()
 
 
@@ -176,7 +160,7 @@ class WrapCLI(object):
                 if src == 'stdout':
                     print(line.rstrip("\n"))
                 else:
-                    print(line.rsplit("\n"), file=sys.stderr)
+                    print(line.rstrip("\n"), file=sys.stderr)
             except StopIteration as e:
                 retcode = e.value
                 break
