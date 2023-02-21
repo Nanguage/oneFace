@@ -1,7 +1,7 @@
 from oneface.dash_app import *
 from oneface.core import one
-from oneface.arg import Arg
 from oneface.dash_app.embed import flask_route
+from funcdesc import Val
 
 from dash import dcc
 
@@ -9,7 +9,7 @@ from dash import dcc
 def test_app_create():
     @app
     @one
-    def func(a: Arg(int, [0, 10]), b: Arg(float, [0, 5])):
+    def func(a: Val(int, [0, 10]), b: Val(float, [0, 5])):
         return a + b
     
     assert func.get_dash_app() is not None
@@ -20,7 +20,7 @@ def test_app_create():
 def test_field_default_value():
     @app
     @one
-    def func(a: Arg[int, [-10, 10]] = 0,
+    def func(a: Val[int, [-10, 10]] = 0,
              b: int = 20):
         return a + b
 

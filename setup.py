@@ -7,10 +7,10 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3.10",
+    'License :: OSI Approved :: MIT License',
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
 ]
@@ -37,6 +37,7 @@ def get_long_description():
 
 def get_install_requires():
     requirements = [
+        "funcdesc",
         "rich",
         "fire",
         "qtpy",
@@ -60,7 +61,7 @@ setup(
     author='Weize Xu',
     author_email='vet.xwz@gmail.com',
     version=get_version(),
-    license='GPLv3',
+    license='MIT',
     description='oneFace is a library for automatically generating multiple '
     'interfaces(CLI, GUI) from a callable Python object',
     long_description=get_long_description(),
@@ -83,5 +84,5 @@ setup(
         'pyside6': ['PySide6'],
         'all': ['pyqt6'] + requires_dash,
     },
-    python_requires='>=3.7, <4',
+    python_requires='>=3.8, <4',
 )

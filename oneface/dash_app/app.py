@@ -6,14 +6,17 @@ from dash import Dash, dcc, html, Input, Output, State
 from dash.exceptions import PreventUpdate
 from ansi2html import Ansi2HTMLConverter
 import visdcc
+from funcdesc.types import (
+    OneOf, SubSet, InputPath, OutputPath
+)
+from funcdesc.desc import NotDef
+from funcdesc.parse import parse_func
 
-from ..types import (Selection, SubSet, InputPath, OutputPath)
-from ..arg import Empty, parse_func_args
 from .input_item import (
     InputItem, IntInputItem, FloatInputItem, StrInputItem, BoolInputItem,
     DropdownInputItem, MultiDropdownInputItem,
 )
-from ..utils import AllowWrapInstanceMethod
+from ..utils import AllowWrapInstanceMethod, get_callable_name
 
 
 class App(AllowWrapInstanceMethod):
@@ -28,12 +31,7 @@ class App(AllowWrapInstanceMethod):
             result_show_type="text",
             **server_args):
         self.func = func
-        if name is not None:
-            self.name = name
-        elif hasattr(func, "name"):
-            self.name = func.name
-        else:
-            self.name = func.__name__
+        self.name = get_callable_name(func, name)
         self.show_console = show_console
         self.console_interval = console_interval
         self.interactive = interactive
@@ -114,17 +112,17 @@ class App(AllowWrapInstanceMethod):
         """Parse target function's arguments,
         return a list of input widgets."""
         widgets, names, types, attrs = [], [], [], []
-        arg_objs = parse_func_args(self.func)
-        for n, a in arg_objs.items():
-            if a.type is Empty:
+        desc = parse_func(self.func)
+        for a in desc.inputs:
+            if a.type is None:
                 continue
             constructor = self.type_to_widget_constructor[a.type.__name__]
-            default = None if a.default is Empty else a.default
+            default = None if a.default is NotDef else a.default
             attr = a.kwargs
             widget = constructor(
-                n, a.range, default, attrs=attr).widget
+                a.name, a.range, default, attrs=attr).widget
             widgets.append(widget)
-            names.append(n)
+            names.append(a.name)
             types.append(a.type)
             attrs.append(attr)
         self.input_names = names
@@ -271,7 +269,7 @@ App.register_type_convert(float)
 App.register_widget(str, StrInputItem)
 App.register_widget(bool, BoolInputItem)
 App.register_type_convert(bool, lambda s: s == "True")
-App.register_widget(Selection, DropdownInputItem)
+App.register_widget(OneOf, DropdownInputItem)
 App.register_widget(SubSet, MultiDropdownInputItem)
 App.register_widget(InputPath, StrInputItem)
 App.register_widget(OutputPath, StrInputItem)

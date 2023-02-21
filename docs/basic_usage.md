@@ -1,23 +1,23 @@
 
 # Basic Usage
 
-Using `one` decorate the function, and use `Arg` mark type and range of the arguments.
+Using `one` decorate the function, and use `Val` mark type and range of the arguments.
 
 ```Python
-from oneface import one, Arg
+from oneface import one, Val
 
 @one
-def print_person(name: str, age: Arg[int, [0, 120]]):
-    return f"{name} is {age} years old."
+def print_person(name: str, age: Val[int, [0, 120]]):
+    print(f"{name} is {age} years old.")
 ```
 
-**Note**: `Arg(type, range)` is same to `Arg[type, range]`.
+**Note**: `Val(type, range)` is same to `Val[type, range]`.
 
 ```Python
 # This is same to the previous defination
 @one
-def print_person(name: str, age: Arg(int, [0, 120])):
-    return f"{name} is {age} years old."
+def print_person(name: str, age: Val(int, [0, 120])):
+    print(f"{name} is {age} years old.")
 ```
 
 ## Type and range checking
@@ -33,7 +33,7 @@ Arguments table:
  name      <class 'str'>  None      Tom       <class 'str'>
  age       <class 'int'>  [0, 120]  20        <class 'int'>
 
-'Tom is 20 years old.'
+Tom is 20 years old.
 ```
 
 If we pass parameters with incorrect type or range, it will raise an exception:
@@ -48,10 +48,13 @@ Arguments table:
  age       <class 'int'>  [0, 120]  -20       <class 'int'>
 
 Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "C:\Users\Nangu\Desktop\oneInterface\oneface\core.py", line 117, in __call__
-    raise ArgsCheckError(errors)
-oneface.core.ArgsCheckError: [TypeError("Input value 100 is not in valid type(<class 'str'>)"), ValueError('Input value -20 is not in a valid range.')]
+  File "C:\Users\Nangu\Desktop\oneFace\tmp\test1.py", line 9, in <module>
+    print_person(100, -20)
+  File "C:\Users\Nangu\miniconda3\envs\oneface\lib\site-packages\funcdesc\guard.py", line 46, in __call__
+    self.check_inputs(pass_in, errors)
+  File "C:\Users\Nangu\Desktop\oneFace\oneface\check.py", line 86, in check_inputs
+    raise CheckError(errors)
+funcdesc.guard.CheckError: [TypeError("Value 100 is not in valid type(<class 'str'>)"), ValueError('Value -20 is not in a valid range([0, 120]).')]
 ```
 
 ### Turn-off arguments print
@@ -60,11 +63,11 @@ By default, oneface will pretty print the input arguments with a table. It can b
 
 ```Python
 @one(print_args=False)
-def print_person(name: str, age: Arg[int, [0, 120]]):
-    return f"{name} is {age} years old."
+def print_person(name: str, age: Val[int, [0, 120]]):
+    print(f"{name} is {age} years old.")
 
 >>> print_person("Tom", 20)
-'Tom is 20 years old.'
+Tom is 20 years old.
 ```
 
 ## Create interfaces
@@ -76,7 +79,7 @@ from oneface import one, Arg
 
 @one
 def print_person(name: str, age: Arg[int, [0, 120]]):
-    return f"{name} is {age} years old."
+    print(f"{name} is {age} years old.")
 
 print_person.cli()
 ```

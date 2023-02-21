@@ -2,12 +2,12 @@ import sys
 sys.path.insert(0, "./")
 import subprocess
 from oneface.core import *
-from oneface.arg import Arg
+from funcdesc import Val
 import pytest
 
 
 @one
-def cli_func(a: Arg(int, [0, 10])):
+def cli_func(a: Val(int, [0, 10])):
     print(a)
 
 

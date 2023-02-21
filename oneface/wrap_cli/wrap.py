@@ -4,21 +4,30 @@ import typing as T
 import inspect
 import re
 import subprocess as subp
-from collections import OrderedDict
 from ctypes import ArgumentError
 from threading import Thread
 from queue import Queue
 
 import yaml
-
-from ..arg import Arg, Empty
-from ..check import parse_pass_in
+from funcdesc.desc import Description, Value, NotDef
 
 
 def load_config(path: str) -> dict:
     with open(path) as f:
         conf = yaml.safe_load(f)
     return conf
+
+
+class ArgDef(T.TypedDict):
+    type: str
+    range: T.Any
+    default: T.Any
+
+
+class CLIConfig(T.TypedDict):
+    name: str
+    command: str
+    arguments: T.Dict[str, ArgDef]
 
 
 def extrace_key(d: dict, key, default) -> T.Any:
@@ -28,30 +37,32 @@ def extrace_key(d: dict, key, default) -> T.Any:
         return default
 
 
-def parse_arg_objs(config: dict) -> T.OrderedDict[str, Arg]:
-    args = OrderedDict()
-    args_conf: dict = config['arguments']
+def config_to_desc(config: CLIConfig) -> Description:
+    args_conf = config['arguments']
+    inputs = []
     for n, p_conf in args_conf.items():
         p_conf: dict = p_conf.copy()
         _tp = extrace_key(p_conf, 'type', 'str')
-        _default = extrace_key(p_conf, 'default', Empty)
         _range = extrace_key(p_conf, 'range', None)
-        arg = Arg(
+        _default = extrace_key(p_conf, 'default', NotDef)
+        val = Value(
             type=eval(_tp),
             range=_range,
             default=_default,
+            name=n,
             **p_conf
         )
-        args[n] = arg
-    return args
+        inputs.append(val)
+    desc = Description(inputs)
+    return desc
 
 
-def compose_signature(args: T.OrderedDict[str, Arg]) -> inspect.Signature:
+def compose_signature(desc: Description) -> inspect.Signature:
     parameters = []
-    for name, arg_obj in args.items():
+    for arg in desc.inputs:
         param = inspect.Parameter(
-            name, inspect.Parameter.POSITIONAL_OR_KEYWORD,
-            default=arg_obj.default, annotation=arg_obj)
+            arg.name, inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            default=arg.default, annotation=arg)
         parameters.append(param)
     sig = inspect.Signature(parameters)
     return sig
@@ -80,10 +91,11 @@ class Command(object):
         return cmd
 
 
-def replace_vals(vals: dict, arg_objs: T.OrderedDict[str, Arg]) -> dict:
+def replace_vals(vals: dict, desc: Description) -> dict:
     vals = vals.copy()
+    name_to_arg = {v.name: v for v in desc.inputs}
     for key, val in vals.items():
-        arg_obj = arg_objs[key]
+        arg_obj = name_to_arg[key]
         if (val is True) and ('true_insert' in arg_obj.kwargs):
             vals[key] = arg_obj.kwargs['true_insert']
         if (val is False) and ('false_insert' in arg_obj.kwargs):
@@ -135,18 +147,18 @@ class ProcessRunner(object):
 
 
 class WrapCLI(object):
-    def __init__(self, config: dict, print_cmd=True):
+    def __init__(self, config: CLIConfig, print_cmd=True):
         self.config = config
         self.name = self.config['name']
-        self.arg_objs = parse_arg_objs(config)
+        self.desc = config_to_desc(config)
         self.command = Command(config['command'])
-        self.command.check_placeholder(list(self.arg_objs.keys()))
-        self.__signature__ = compose_signature(self.arg_objs)
+        self.command.check_placeholder([v.name for v in self.desc.inputs])
+        self.__signature__ = compose_signature(self.desc)
         self.is_print_cmd = print_cmd
 
     def __call__(self, *args, **kwargs) -> int:
-        vals = parse_pass_in(args, kwargs, self.arg_objs)
-        vals = replace_vals(vals, self.arg_objs)
+        vals = self.desc.parse_pass_in(args, kwargs)
+        vals = replace_vals(vals, self.desc)
         cmd_str = self.command.format(vals)
         if self.is_print_cmd:
             print(f"Run command: {cmd_str}")

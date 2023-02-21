@@ -1,65 +1,65 @@
 from oneface.core import *
 from oneface.check import *
+from funcdesc import Val
+from funcdesc.guard import CheckError
 
 import pytest
 
 
 def test_arg_check():
     @check_args(print_args=False)
-    def func(a: Arg(int, [0, 10]), b: Arg(float, [0, 1]), k=10):
+    def func(a: Val(int, [0, 10]), b: Val(float, [0, 1]), k=10):
         return a
     assert func(10, 0.3) == 10
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         func(11, 0.3)
     assert isinstance(e.value.args[0][0], ValueError)
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         func(2.0, 0.3)
     assert isinstance(e.value.args[0][0], TypeError)
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         func("str", 0.3)
     assert isinstance(e.value.args[0][0], TypeError)
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         func(2, 10.0)
     assert isinstance(e.value.args[0][0], ValueError)
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         func(-1, 1)
     assert isinstance(e.value.args[0][0], ValueError)
     assert isinstance(e.value.args[0][1], TypeError)
     func(2, 0.5)
     @check_args(print_args=False)
-    def func(a: Arg(bool)):
+    def func(a: Val(bool)):
         pass
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         func(1)
     @check_args(print_args=False)
-    def func(a: Arg(int)):
+    def func(a: Val(int)):
         return a
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         func(1.0)
     assert isinstance(e.value.args[0][0], TypeError)
 
 
 def test_arg_register():
-    @one(print_args=False)
-    def func(a: Arg(list, None)):
+    @check_args(print_args=False)
+    def func(a: Val(list, None)):
         pass
-    with pytest.raises(NotImplementedError):
-        func([0,1])
-    Arg.register_type_check(list)
+    Val.register_type_check(list)
     func([1,2,3])
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         func(True)
     assert isinstance(e.value.args[0][0], TypeError)
 
 
 def test_print_args():
-    @one
-    def func(a: Arg(int, [0, 10]), b: Arg(float, [0, 1])):
+    @check_args(print_args=True)
+    def func(a: Val(int, [0, 10]), b: Val(float, [0, 1])):
         return a + b
     func(3, 0.5)
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         func(-1, 1.0)
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         func(0.1, 1)
 
 
@@ -69,36 +69,21 @@ def test_class_method_arg_check():
             self.a = a
         
         @check_args(print_args=False)
-        def mth1(self, b: Arg(float, [0, 1])):
+        def mth1(self, b: Val(float, [0, 1])):
             return self.a + b
 
     a = A(10)
     assert a.mth1(0.1) == 10.1
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         a.mth1(10.0)
     assert isinstance(e.value.args[0][0], ValueError)
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         a.mth1(False)
     assert isinstance(e.value.args[0][0], TypeError)
         
 
-
-def test_parse_pass_in():
-    def f1(a, b, c=1, d=2):
-        pass
-    arg_objs = parse_func_args(f1)
-    vals = parse_pass_in((1, 2), {'d': 10}, arg_objs)
-    assert (vals['a'] == 1) and (vals['b'] == 2) and (vals['c'] == 1) and (vals['d'] == 10)
-    vals = parse_pass_in((1, 2, 3), {}, arg_objs)
-    assert (vals['a'] == 1) and (vals['b'] == 2) and (vals['c'] == 3) and (vals['d'] == 2)
-    with pytest.raises(ArgumentError):
-        vals = parse_pass_in((1,), {}, arg_objs)
-    vals = parse_pass_in([], {'a':1, 'b':2}, arg_objs)
-    assert (vals['a'] == 1) and (vals['b'] == 2) and (vals['c'] == 1) and (vals['d'] == 2)
-
-
 def test_docstring():
-    @one
+    @check_args
     def func1():
         "test"
         pass
@@ -110,10 +95,10 @@ def test_implicit():
     def func(a: int):
         return a + 1
     assert func(1) == 2
-    with pytest.raises(ArgsCheckError):
+    with pytest.raises(CheckError):
         func(1.0)
     @one(print_args=False)
-    def func(a: Arg[int, [0, 10]], b: Arg[int, [0, 10]]):
+    def func(a: Val[int, [0, 10]], b: Val[int, [0, 10]]):
         return a + b
     assert func(10, 10) == 20
 

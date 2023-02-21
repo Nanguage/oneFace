@@ -1,13 +1,12 @@
 import typing as T
-from copy import copy
-from ctypes import ArgumentError
 import functools
 
 from rich.console import Console
 from rich.table import Table
+from funcdesc.guard import Guard, TF2, CheckError
+from funcdesc.desc import Description, Value
 
-from .arg import Empty, Arg, parse_func_args
-from .utils import AllowWrapInstanceMethod
+from .utils import get_callable_name
 
 
 def check_args(func=None, **kwargs):
@@ -19,77 +18,49 @@ def check_args(func=None, **kwargs):
 console = Console()
 
 
-class ArgsCheckError(Exception):
-    pass
-
-
-def parse_pass_in(
-        args: tuple, kwargs: dict,
-        arg_objs: T.OrderedDict[str, "Arg"]):
-    """Get the pass in value of the func
-    arguments according to it's signature."""
-    args_ = list(args)
-    kwargs = copy(kwargs)
-    res = {}
-    for n, a in arg_objs.items():
-        has_default = a.default is not Empty
-        if len(args_) > 0:
-            res[n] = args_.pop(0)
-        elif (len(kwargs) > 0) and (n in kwargs):
-            res[n] = kwargs.pop(n)
-        else:
-            if has_default:
-                res[n] = a.default
-            else:
-                raise ArgumentError(
-                    f"{n} is not provided and has no default value.")
-    return res
-
-
-class CallWithCheck(AllowWrapInstanceMethod):
-    def __init__(self, func, print_args=True, name=None):
-        self.func = func
-        functools.update_wrapper(self, func)
-        if name is not None:
-            self.name = name
-        elif hasattr(func, "name"):
-            self.name = func.name
-        else:
-            self.name = func.__name__
+class CallWithCheck(Guard[TF2]):
+    def __init__(
+            self,
+            func: TF2,
+            desc: T.Optional[Description] = None,
+            check_inputs: bool = True,
+            check_outputs: bool = False,
+            check_side_effect: bool = False,
+            check_type: bool = True,
+            check_range: bool = True,
+            print_args: bool = True,
+            name: T.Optional[str] = None,
+            ) -> None:
+        self.name = get_callable_name(func, name)
         self.is_print_args = print_args
-        self.table = None
-
-    def __call__(self, *args, **kwargs):
-        arg_objs = parse_func_args(self.func)
-        if self.is_print_args:
-            self.table = self.get_argument_table()
-        # check args
-        vals = parse_pass_in(args, kwargs, arg_objs)
-        errors = []
-        for n, arg in arg_objs.items():
-            self._check_arg(n, arg, vals[n], errors)
-        if self.is_print_args:
-            self.print_args()
-        if len(errors) > 0:
-            raise ArgsCheckError(errors)
-        return self.func(*args, **kwargs)
+        self.table: T.Optional[Table] = None
+        super().__init__(
+            func, desc, check_inputs, check_outputs,
+            check_side_effect, check_type, check_range,)
 
     def print_args(self):
+        if self.table is None:
+            return
         if self.name:
             console.print(f"Run: [bold purple]{self.name}")
         console.print("Arguments table:\n")
         console.print(self.table)
         console.print()
 
-    def _check_arg(
-            self, name: str, arg: Arg,
-            val: T.Any, errors: T.List[Exception]):
+    def check_value(
+            self,
+            arg: Value,
+            val: T.Any,
+            errors: T.List[Exception]):
         val_str = str(val)
         range_str = str(arg.range)
         tp_str = str(type(val))
         ann_tp_str = str(arg.type)
         try:
-            arg.check(val)
+            if self.is_check_type:
+                arg.check_type(val)
+            if self.is_check_range:
+                arg.check_range(val)
         except Exception as e:
             errors.append(e)
             if isinstance(e, ValueError):
@@ -101,7 +72,18 @@ class CallWithCheck(AllowWrapInstanceMethod):
             else:
                 raise e
         if self.is_print_args:
-            self.table.add_row(name, ann_tp_str, range_str, val_str, tp_str)
+            self.table.add_row(
+                arg.name, ann_tp_str, range_str, val_str, tp_str)
+
+    def check_inputs(self, pass_in: dict, errors: list):
+        if self.is_print_args:
+            self.table = self.get_argument_table()
+        for val in self.desc.inputs:
+            self.check_value(val, pass_in[val.name], errors)
+        if self.is_print_args:
+            self.print_args()
+        if len(errors) > 0:
+            raise CheckError(errors)
 
     @staticmethod
     def get_argument_table():

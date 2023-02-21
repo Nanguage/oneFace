@@ -1,6 +1,6 @@
 from .core import one
-from .arg import Arg
+from funcdesc import Val
 
-__version__ = '0.1.9'
+__version__ = '0.2.0'
 
-__all__ = [one, Arg]
+__all__ = [one, Val]

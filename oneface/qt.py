@@ -1,11 +1,15 @@
 import typing as T
 import functools
+
 from qtpy import QtWidgets
 from qtpy import QtCore
+from funcdesc.parse import parse_func
+from funcdesc.desc import NotDef
+from funcdesc.types import (
+    InputPath, OutputPath, OneOf, SubSet
+)
 
-from .types import (InputPath, OutputPath, Selection, SubSet)
-from .arg import Empty, parse_func_args
-from .utils import AllowWrapInstanceMethod
+from .utils import AllowWrapInstanceMethod, get_callable_name
 
 
 class Worker(QtCore.QObject):
@@ -48,12 +52,7 @@ class GUI(AllowWrapInstanceMethod):
         self.run_once = run_once
         self.result = None
         self.app = get_app()
-        if name is not None:
-            self.name = name
-        elif hasattr(func, "name"):
-            self.name = func.name
-        else:
-            self.name = func.__name__
+        self.name = get_callable_name(func, name)
         self.window = QtWidgets.QWidget()
         self.window._oneface_wrap = self
         self.window.setWindowTitle(self.name)
@@ -72,17 +71,17 @@ class GUI(AllowWrapInstanceMethod):
         self.window.setLayout(self.layout)
 
     def compose_arg_widgets(self, layout: QtWidgets.QVBoxLayout):
-        arg_objs = parse_func_args(self.func)
-        for n, a in arg_objs.items():
-            if a.type is Empty:
+        desc = parse_func(self.func)
+        for a in desc.inputs:
+            if a.type is None:
                 continue
             if a.type.__name__ not in self.type_to_widget_constructor:
                 raise NotImplementedError(
                   f"Input widget constructor is not registered for {a.type}")
             constructor = self.type_to_widget_constructor[a.type.__name__]
-            default = None if a.default is Empty else a.default
-            w = constructor(n, a.range, default, attrs=a.kwargs)
-            self.arg_widgets[n] = w
+            default = None if a.default is NotDef else a.default
+            w = constructor(a.name, a.range, default, attrs=a.kwargs)
+            self.arg_widgets[a.name] = w
             layout.addWidget(w)
 
     def connect_events(self):
@@ -97,7 +96,7 @@ class GUI(AllowWrapInstanceMethod):
     def run_func(self):
         kwargs = self.get_args()
         if self.run_once:
-            self.window.hide()
+            self.run_btn.setEnabled(False)
             self.result = self.func(**kwargs)
             self.window.close()
         else:
@@ -280,7 +279,7 @@ GUI.register_widget(int, IntInputItem)
 GUI.register_widget(float, FloatInputItem)
 GUI.register_widget(str, StrInputItem)
 GUI.register_widget(bool, BoolInputItem)
-GUI.register_widget(Selection, SelectionInputItem)
+GUI.register_widget(OneOf, SelectionInputItem)
 GUI.register_widget(SubSet, SubsetInputItem)
 GUI.register_widget(InputPath, PathInputItem)
 GUI.register_widget(OutputPath, OutPathInputItem)

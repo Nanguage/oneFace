@@ -6,12 +6,12 @@ oneface dash provides a terminal for displaying operational status.
 The `show_console` parameter is used to control whether it is displayed.
 
 ```Python
-from oneface import one, Arg
+from oneface import one, Val
 
 @one
 def bmi(name: str = "Tom",
-        height: Arg[float, [100, 250]] = 160,
-        weight: Arg[float, [0, 300]] = 50.0):
+        height: Val[float, [100, 250]] = 160,
+        weight: Val[float, [0, 300]] = 50.0):
     BMI = weight / (height / 100) ** 2
     print(f"Hi {name}. Your BMI is: {BMI}")
     return BMI
@@ -38,9 +38,9 @@ By default, argument label is the variable name. But it can be explicitly set by
 
 ```Python
 @one
-def bmi(name: Arg(str, text="NAME"),  # explicitly label setting
-        height: Arg(float, [100, 250]) = 160,
-        weight: Arg(float, [0, 300]) = 50.0):
+def bmi(name: Val(str, text="NAME"),  # explicitly label setting
+        height: Val(float, [100, 250]) = 160,
+        weight: Val(float, [0, 300]) = 50.0):
     BMI = weight / (height / 100) ** 2
     print(f"Hi {name}. Your BMI is: {BMI}")
     return BMI
@@ -61,13 +61,13 @@ In this case, all parameters need to have default values.
 ## Interactive parameter
 
 Interactive parameters rerun the function each time the input is changed.
-We can use `Arg`'s interactive to mark the interactive parameter, for example we mark `height` as interactive:
+We can use `Val`'s parameter to mark the interactive mode, for example we mark `height` as interactive:
 
 ```Python
 @one
-def bmi(name: Arg(str) = "Tom",
-        height: Arg(float, [100, 250], interactive=True) = 160,
-        weight: Arg(float, [0, 300]) = 50.0):
+def bmi(name: Val(str) = "Tom",
+        height: Val(float, [100, 250], interactive=True) = 160,
+        weight: Val(float, [0, 300]) = 50.0):
     BMI = weight / (height / 100) ** 2
     print(f"Hi {name}. Your BMI is: {BMI}")
     return BMI
@@ -94,12 +94,12 @@ By setting `result_show_type` to `'plotly'` and wrap a function return the plotl
 we can archieve this:
 
 ```Python
-from oneface import one, Arg
+from oneface import one, Val
 import plotly.express as px
 import numpy as np
 
 @one
-def draw_random_points(n: Arg[int, [1, 10000]] = 100):
+def draw_random_points(n: Val[int, [1, 10000]] = 100):
     x, y = np.random.random(n), np.random.random(n)
     fig = px.scatter(x=x, y=y)
     return fig
@@ -118,12 +118,12 @@ You can set the `result_show_type='download'` for this purpose.
 In this case, the target function should return the path to the result file:
 
 ```Python
-from oneface import one, Arg
+from oneface import one, Val
 
 @one
-def bmi(name: Arg(str) = "Tom",
-        height: Arg(float, [100, 250], interactive=True) = 160,
-        weight: Arg(float, [0, 300]) = 50.0):
+def bmi(name: Val(str) = "Tom",
+        height: Val(float, [100, 250], interactive=True) = 160,
+        weight: Val(float, [0, 300]) = 50.0):
     BMI = weight / (height / 100) ** 2
     out_path = f"./{name}_bmi.txt"
     with open(out_path, 'w') as fo:
@@ -144,7 +144,7 @@ For example we can create a app draw a random series:
 ```Python
 # random_series.py
 from oneface.dash_app import App
-from oneface import Arg, one
+from oneface import Val, one
 import numpy as np
 import plotly.express as px
 from dash import Dash, Output, Input, dcc
@@ -173,7 +173,7 @@ class PlotSeries(App):
             return fig
 
 @one
-def random_series(n: Arg[int, [0, 10000]] = 100):
+def random_series(n: Val[int, [0, 10000]] = 100):
     return np.random.random(n) * 100
 
 

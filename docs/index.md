@@ -39,12 +39,12 @@ oneFace is an easy way to create interfaces in Python,
 just decorate your function and mark the **type** and **range** of the arguments:
 
 ```Python
-from oneface import one, Arg
+from oneface import one, Val
 
 @one
 def bmi(name: str,
-        height: Arg[float, [100, 250]] = 160,
-        weight: Arg[float, [0, 300]] = 50.0):
+        height: Val[float, [100, 250]] = 160,
+        weight: Val[float, [0, 300]] = 50.0):
     BMI = weight / (height / 100) ** 2
     print(f"Hi {name}. Your BMI is: {BMI}")
     return BMI

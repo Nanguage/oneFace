@@ -16,7 +16,7 @@ class Person:
 ### Register type check
 
 ```Python
-Arg.register_type_check(Person)
+Val.register_type_check(Person)
 ```
 
 This will allow oneface to check the type of the input parameter to make sure it is an instance of `Person`:
@@ -34,13 +34,16 @@ Arguments table:
  person    <class '__main__.Person'>  None   ['Tom', 10]  <class 'list'>
 
 Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "C:\Users\Nangu\Desktop\oneFace\oneface\core.py", line 117, in __call__
-    raise ArgsCheckError(errors)
-oneface.core.ArgsCheckError: [TypeError("Input value ['Tom', 10] is not in valid type(<class '__main__.Person'>)")]
+  File "C:\Users\Nangu\Desktop\oneFace\tmp\test1.py", line 17, in <module>
+    print_person(["Tom", 10])
+  File "C:\Users\Nangu\miniconda3\envs\oneface\lib\site-packages\funcdesc\guard.py", line 46, in __call__
+    self.check_inputs(pass_in, errors)
+  File "C:\Users\Nangu\Desktop\oneFace\oneface\check.py", line 86, in check_inputs
+    raise CheckError(errors)
+funcdesc.guard.CheckError: [TypeError("Value ['Tom', 10] is not in valid type(<class '__main__.Person'>)")]
 ```
 
-`Arg.register_type_check` also allow you to define a custom type checker, for example:
+`Val.register_type_check` also allow you to define a custom type checker, for example:
 
 ```Python
 def check_person_type(val, tp):
@@ -60,15 +63,17 @@ This will not only check if the input value is an instance of `Preson`, but also
 Run: print_person
 Arguments table:
 
- Argument  Type                       Range  InputVal                       InputType
- person    <class '__main__.Person'>  None   <__main__.Person object at     <class '__main__.Person'>
-                                             0x000001FBEC3BBCC8>
+ Argument  Type                       Range  InputVal                                        InputType
+ person    <class '__main__.Person'>  None   <__main__.Person object at 0x0000021B20DD2FD0>  <class '__main__.Person'>
 
 Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "C:\Users\Nangu\Desktop\oneFace\oneface\core.py", line 117, in __call__
-    raise ArgsCheckError(errors)
-oneface.core.ArgsCheckError: [TypeError("Input value <__main__.Person object at 0x000001FBEC3BBCC8> is not in valid type(<class '__main__.Person'>)")]
+  File "C:\Users\Nangu\Desktop\oneFace\tmp\test1.py", line 24, in <module>
+    print_person(Person("Tom", "10"))
+  File "C:\Users\Nangu\miniconda3\envs\oneface\lib\site-packages\funcdesc\guard.py", line 46, in __call__
+    self.check_inputs(pass_in, errors)
+  File "C:\Users\Nangu\Desktop\oneFace\oneface\check.py", line 86, in check_inputs
+    raise CheckError(errors)
+funcdesc.guard.CheckError: [TypeError("Value <__main__.Person object at 0x0000021B20DD2FD0> is not in valid type(<class '__main__.Person'>)")]
 ```
 
 ### Register range check
@@ -76,14 +81,14 @@ oneface.core.ArgsCheckError: [TypeError("Input value <__main__.Person object at 
 You can also register a range check for it, for example, to limit the age to a certain range:
 
 ```Python
-Arg.register_range_check(Person, lambda val, range: range[0] <= val.age <= range[1])
+Val.register_range_check(Person, lambda val, range: range[0] <= val.age <= range[1])
 ```
 
 Mark the range in argument annotation:
 
 ```Python
 @one
-def print_person(person: Arg[Person, [0, 100]]):
+def print_person(person: Val[Person, [0, 100]]):
     print(f"{person.name} is {person.age} years old.")
 ```
 
@@ -94,15 +99,18 @@ This will limit the person's age in the range of 0~100:
 Run: print_person
 Arguments table:
 
- Argument  Type                       Range     InputVal                    InputType
- person    <class '__main__.Person'>  [0, 100]  <__main__.Person object at  <class '__main__.Person'>
-                                                0x000001FBEC3FC248>
+ Argument  Type                       Range     InputVal                                      InputType
+ person    <class '__main__.Person'>  [0, 100]  <__main__.Person object at                    <class '__main__.Person'>
+                                                0x000001E9148CAD30>
 
 Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "C:\Users\Nangu\Desktop\oneFace\oneface\core.py", line 117, in __call__
-    raise ArgsCheckError(errors)
-oneface.core.ArgsCheckError: [ValueError('Input value <__main__.Person object at 0x000001FBEC3FC248> is not in a valid range.')]
+  File "C:\Users\Nangu\Desktop\oneFace\tmp\test1.py", line 25, in <module>
+    print_person(Person("Tom", -10))
+  File "C:\Users\Nangu\miniconda3\envs\oneface\lib\site-packages\funcdesc\guard.py", line 46, in __call__
+    self.check_inputs(pass_in, errors)
+  File "C:\Users\Nangu\Desktop\oneFace\oneface\check.py", line 86, in check_inputs
+    raise CheckError(errors)
+funcdesc.guard.CheckError: [ValueError('Value <__main__.Person object at 0x000001E9148CAD30> is not in a valid range([0, 100]).')]
 ```
 
 ## Registration of interface widgets
@@ -189,8 +197,8 @@ App.register_type_convert(Person, lambda s: eval(s))
 
 Here we give another example of using TextArea to get long string input.
 
-```
-from oneface import one, Arg
+```Python
+from oneface import one, Val
 from oneface.dash_app import App, InputItem
 from dash import dcc
 
@@ -208,7 +216,7 @@ App.register_widget(str, LongStrInputItem)
 
 
 @one
-def print_doc(doc: Arg(str)):
+def print_doc(doc: Val(str)):
     print(doc)
 
 

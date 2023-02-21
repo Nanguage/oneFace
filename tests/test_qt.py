@@ -1,7 +1,7 @@
-import sys; sys.path.insert(0, "./")
 from oneface.core import *
 from oneface.check import *
 from oneface.qt import *
+from funcdesc import Val
 
 import pytest
 
@@ -9,7 +9,7 @@ import pytest
 def test_int_input():
     @gui
     @one
-    def func(a: Arg(int, [0, 10])):
+    def func(a: Val(int, [0, 10])):
         return a
     
     assert isinstance(func, GUI)
@@ -22,7 +22,7 @@ def test_int_input():
 def test_int_with_default():
     @gui
     @one
-    def func(a: Arg(int, [0, 10]) = 1):
+    def func(a: Val(int, [0, 10]) = 1):
         return a
 
     assert isinstance(func, GUI)
@@ -35,7 +35,7 @@ def test_int_with_default():
 def test_set_text():
     @gui
     @one
-    def func(a: Arg(int, [0, 10], text="text a")):
+    def func(a: Val(int, [0, 10], text="text a")):
         return a
     
     assert func.arg_widgets['a'].label.text() == "text a:"
@@ -44,7 +44,7 @@ def test_set_text():
 def test_float_input():
     @gui
     @one
-    def func(a: Arg(float, [0, 10])):
+    def func(a: Val(float, [0, 10])):
         return a
     
     assert isinstance(func, GUI)
@@ -57,7 +57,7 @@ def test_float_input():
 def test_str_input():
     @gui
     @one
-    def func(a: Arg(str)):
+    def func(a: Val(str)):
         return a
     
     assert isinstance(func, GUI)
@@ -70,7 +70,7 @@ def test_str_input():
 def test_bool_input():
     @gui
     @one
-    def func(a: Arg(bool), b: Arg(bool) = False):
+    def func(a: Val(bool), b: Val(bool) = False):
         return a, b
     
     assert isinstance(func, GUI)
@@ -84,7 +84,7 @@ def test_bool_input():
 def test_selection_input():
     @gui
     @one
-    def func(a: Arg(Selection, ["a", "b"]) = "a"):
+    def func(a: Val(OneOf, ["a", "b"]) = "a"):
         return a
     
     assert isinstance(func, GUI)
@@ -97,7 +97,7 @@ def test_selection_input():
 def test_subset_input():
     @gui
     @one
-    def func(a: Arg(SubSet, ["a", "b"]) = ["a"]):
+    def func(a: Val(SubSet, ["a", "b"]) = ["a"]):
         return a
     
     assert isinstance(func, GUI)
@@ -110,13 +110,13 @@ def test_subset_input():
 def test_inputpath_input():
     @gui
     @one
-    def func(a: Arg(InputPath) = "a"):
+    def func(a: Val(InputPath) = "a"):
         return a
     
     assert isinstance(func, GUI)
     kwargs = func.get_args()
     assert kwargs['a'] == "a"
-    with pytest.raises(ArgsCheckError) as e:
+    with pytest.raises(CheckError) as e:
         func.run_func()
     assert isinstance(e.value.args[0][0], ValueError)
 
