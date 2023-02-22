@@ -20,6 +20,22 @@ def print_person(name: str, age: Val(int, [0, 120])):
     print(f"{name} is {age} years old.")
 ```
 
+You can also mark arguments using decorators in [`funcdesc`](https://github.com/Nanguage/funcdesc):
+
+```Python
+from oneface import one
+from funcdesc import mark_input
+
+@one
+@mark_input("age", range=[0, 120])
+def print_person(name: str, age: int):
+    print(f"{name} is {age} years old.")
+
+```
+
+This code achieves the same effect as the previous example, and you can refer to the [`funcdesc`](https://github.com/Nanguage/funcdesc) for more information about the `mark_input` decorator.
+
+
 ## Type and range checking
 
 Functions decorated with `one` will automatically check the type and range of input parameters:
