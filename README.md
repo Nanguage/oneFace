@@ -64,7 +64,7 @@ name: add
 # mark the arguments in command with: {}
 command: python {verbose} -c 'print({a} + {b})'
 
-arguments:
+inputs:
   # describe the type and range of your arguments
   verbose:
     type: bool

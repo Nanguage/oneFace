@@ -5,8 +5,8 @@ name: add
 # Use '{}' to mark all arguments.
 command: python -c "print({a} + {b})" 
 
-# List all argument's type and range
-arguments:
+# List all input argument's type and range
+inputs:
 
   a:
     type: int

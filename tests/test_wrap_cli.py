@@ -2,7 +2,7 @@ import contextlib
 from io import StringIO
 import os.path as osp
 
-from oneface.wrap_cli.wrap import WrapCLI, load_config
+from oneface.wrap_cli.wrap import wrap_cli, load_config
 
 
 HERE = osp.dirname(osp.abspath(__file__))
@@ -12,23 +12,25 @@ example_yaml = osp.join(HERE, "../oneface/wrap_cli/example.yaml")
 def test_load_config():
     conf = load_config(example_yaml)
     assert 'command' in conf
-    assert 'arguments' in conf
+    assert 'inputs' in conf
 
 
 def test_wrap_cli():
     conf = load_config(example_yaml)
-    wrap = WrapCLI(conf)
+    wrap = wrap_cli(conf)
     wrap(1, 2)
     assert wrap.__signature__ is not None
 
 
 def test_retcode():
-    wrap = WrapCLI.from_config_file(example_yaml)
+    conf = load_config(example_yaml)
+    wrap = wrap_cli(conf)
     assert 0 == wrap(40, 2)
 
 
 def test_stdout():
-    wrap = WrapCLI.from_config_file(example_yaml, print_cmd=False)
+    conf = load_config(example_yaml)
+    wrap = wrap_cli(conf, print_cmd=False)
     console_buffer = StringIO()
     with contextlib.redirect_stdout(console_buffer):
         wrap(40, 2)
@@ -38,7 +40,8 @@ def test_stdout():
 
 
 def test_stderr():
-    wrap = WrapCLI.from_config_file(example_yaml, print_cmd=False)
+    conf = load_config(example_yaml)
+    wrap = wrap_cli(conf)
     console_buffer = StringIO()
     with contextlib.redirect_stderr(console_buffer):
         wrap(40, "aaa")
@@ -51,7 +54,7 @@ def test_replace():
     conf = {
         "name": "test",
         "command": "python {c} 'print(1)'",
-        "arguments": {
+        "inputs": {
             "c": {
                 "type": "bool",
                 "true_insert": "-c",
@@ -59,7 +62,7 @@ def test_replace():
             },
         },
     }
-    wrap = WrapCLI(conf, print_cmd=True)
+    wrap = wrap_cli(conf, print_cmd=True)
     assert 0 == wrap(True)
 
 
@@ -67,7 +70,7 @@ def test_stdout_block():
     conf = {
         "name": "test",
         "command": "python {v} -c 'print(1)'",
-        "arguments": {
+        "inputs": {
             "v": {
                 "type": "bool",
                 "true_insert": "-v",
@@ -75,7 +78,7 @@ def test_stdout_block():
             },
         },
     }
-    wrap = WrapCLI(conf, print_cmd=True)
+    wrap = wrap_cli(conf, print_cmd=True)
     console_buffer = StringIO()
     with contextlib.redirect_stderr(console_buffer):
         assert 0 == wrap(True)

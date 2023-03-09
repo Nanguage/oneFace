@@ -18,7 +18,7 @@ name: add
 command: python -c "print({a} + {b})" 
 
 # List all argument's type and range
-arguments:
+inputs:
 
   a:
     type: int
@@ -65,7 +65,7 @@ name: add
 
 command: python {verbose} -c "print({a} + {b})" 
 
-arguments:
+inputs:
 
   verbose:
     type: bool
@@ -108,7 +108,7 @@ And parameter related configrations should set to the corresponding argument fie
 For example:
 
 ```YAML
-arguments:
+inputs:
 
   a:
     type: int

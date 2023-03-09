@@ -4,7 +4,7 @@ import os.path as osp
 
 import fire
 
-from .wrap import WrapCLI
+from .wrap import wrap_cli, load_config
 from ..core import one
 
 
@@ -31,8 +31,8 @@ def run(
     :param interface: The interface type, 'qt_gui' | 'dash_app' | 'cli'
     :param print_cmd: Print the actually executed command or not.
     """
-    wrap = WrapCLI.from_config_file(config_path, print_cmd=print_cmd)
-    config = wrap.config
+    config = load_config(config_path)
+    wrap = wrap_cli(config, print_cmd=print_cmd)
     of = one(wrap, **kwargs)
     if interface == "qt_gui":
         ret_code = of.qt_gui(**config.get('qt_config', {}))
