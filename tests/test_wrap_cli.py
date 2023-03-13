@@ -1,6 +1,7 @@
 import contextlib
 from io import StringIO
 import os.path as osp
+import sys
 
 from oneface.wrap_cli.wrap import wrap_cli, load_config
 
@@ -32,22 +33,18 @@ def test_stdout():
     conf = load_config(example_yaml)
     wrap = wrap_cli(conf, print_cmd=False)
     console_buffer = StringIO()
-    with contextlib.redirect_stdout(console_buffer):
-        wrap(40, 2)
-    console_buffer.seek(0)
-    content = console_buffer.read()
-    assert content.strip() == "42"
+    wrap.out_stream = console_buffer
+    wrap(40, 2)
+    assert console_buffer.getvalue().strip() == "42"
 
 
 def test_stderr():
     conf = load_config(example_yaml)
     wrap = wrap_cli(conf)
     console_buffer = StringIO()
-    with contextlib.redirect_stderr(console_buffer):
-        wrap(40, "aaa")
-    console_buffer.seek(0)
-    content = console_buffer.read()
-    assert "NameError" in content
+    wrap.err_stream = console_buffer
+    wrap(40, "aaa")
+    assert "NameError" in console_buffer.getvalue()
 
 
 def test_replace():

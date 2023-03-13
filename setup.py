@@ -37,8 +37,8 @@ def get_long_description():
 
 def get_install_requires():
     requirements = [
-        "funcdesc>=0.1.1",
-        "cmd2func>=0.1.2",
+        "funcdesc>=0.1.2",
+        "cmd2func>=0.1.4",
         "rich",
         "fire",
         "qtpy",
