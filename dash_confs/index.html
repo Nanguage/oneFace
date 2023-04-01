@@ -1,0 +1,845 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../qt_confs/">
+      
+      
+        <link rel="next" href="../wrap_cli/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.5">
+    
+    
+      
+        <title>Dash configs - oneFace Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7a7fce14.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dash-interface-configs" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="oneFace Docs" class="md-header__button md-logo" aria-label="oneFace Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            oneFace Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Dash configs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Nanguage/oneFace" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="oneFace Docs" class="md-nav__button md-logo" aria-label="oneFace Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    oneFace Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Nanguage/oneFace" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basic_usage/" class="md-nav__link">
+        Basic Usage
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../builtin_types/" class="md-nav__link">
+        Built-in Types
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../type_extension/" class="md-nav__link">
+        Type Extension
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          Interface configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Interface configuration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../qt_confs/" class="md-nav__link">
+        Qt configs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Dash configs
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Dash configs
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#hidden-console" class="md-nav__link">
+    Hidden console
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#console-refresh-interval" class="md-nav__link">
+    Console refresh interval
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#argument-label" class="md-nav__link">
+    Argument label
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#init-run" class="md-nav__link">
+    Init run
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interactive-parameter" class="md-nav__link">
+    Interactive parameter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#result-show-type" class="md-nav__link">
+    Result show type
+  </a>
+  
+    <nav class="md-nav" aria-label="Result show type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plotly-figure-type" class="md-nav__link">
+    Plotly figure type
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#download-type" class="md-nav__link">
+    Download type
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-result-type" class="md-nav__link">
+    Custom result type
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#host-and-port" class="md-nav__link">
+    Host and Port
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debug-mode" class="md-nav__link">
+    debug mode
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wrap_cli/" class="md-nav__link">
+        Wrap command line
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          Embedding
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Embedding
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../qt_embed/" class="md-nav__link">
+        Embeding generated window to a PyQt app
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dash_embed/" class="md-nav__link">
+        Embeding dash to Flask web app
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#hidden-console" class="md-nav__link">
+    Hidden console
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#console-refresh-interval" class="md-nav__link">
+    Console refresh interval
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#argument-label" class="md-nav__link">
+    Argument label
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#init-run" class="md-nav__link">
+    Init run
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interactive-parameter" class="md-nav__link">
+    Interactive parameter
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#result-show-type" class="md-nav__link">
+    Result show type
+  </a>
+  
+    <nav class="md-nav" aria-label="Result show type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plotly-figure-type" class="md-nav__link">
+    Plotly figure type
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#download-type" class="md-nav__link">
+    Download type
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-result-type" class="md-nav__link">
+    Custom result type
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#host-and-port" class="md-nav__link">
+    Host and Port
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debug-mode" class="md-nav__link">
+    debug mode
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="dash-interface-configs">Dash interface configs</h1>
+<h2 id="hidden-console">Hidden console</h2>
+<p>oneface dash provides a terminal for displaying operational status.
+The <code>show_console</code> parameter is used to control whether it is displayed.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">oneface</span> <span class="kn">import</span> <span class="n">one</span><span class="p">,</span> <span class="n">Val</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nd">@one</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">def</span> <span class="nf">bmi</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Tom&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="n">height</span><span class="p">:</span> <span class="n">Val</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">250</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">160</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        <span class="n">weight</span><span class="p">:</span> <span class="n">Val</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">300</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">):</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">BMI</span> <span class="o">=</span> <span class="n">weight</span> <span class="o">/</span> <span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hi </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. Your BMI is: </span><span class="si">{</span><span class="n">BMI</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="k">return</span> <span class="n">BMI</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">bmi</span><span class="o">.</span><span class="n">dash_app</span><span class="p">(</span><span class="n">show_console</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+<p>Will not show the console.</p>
+<h2 id="console-refresh-interval">Console refresh interval</h2>
+<p>By default, the console is refreshed in 2 seconds (2000 microseconds).
+<code>console_interval</code> can be used to set the refresh interval</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">bmi</span><span class="o">.</span><span class="n">dash_app</span><span class="p">(</span><span class="n">console_interval</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</code></pre></div>
+<p>Will set refresh interval to 1 second.</p>
+<h2 id="argument-label">Argument label</h2>
+<p>By default, argument label is the variable name. But it can be explicitly set by <code>text</code> parameter:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nd">@one</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">def</span> <span class="nf">bmi</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">Val</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;NAME&quot;</span><span class="p">),</span>  <span class="c1"># explicitly label setting</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        <span class="n">height</span><span class="p">:</span> <span class="n">Val</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">250</span><span class="p">])</span> <span class="o">=</span> <span class="mi">160</span><span class="p">,</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        <span class="n">weight</span><span class="p">:</span> <span class="n">Val</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">):</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">BMI</span> <span class="o">=</span> <span class="n">weight</span> <span class="o">/</span> <span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hi </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. Your BMI is: </span><span class="si">{</span><span class="n">BMI</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="k">return</span> <span class="n">BMI</span>
+</code></pre></div>
+<h2 id="init-run">Init run</h2>
+<p>By default, it is not called until the user clicks the run button.
+However, the initial call can be turned on by setting <code>init_run=True</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">bmi</span><span class="o">.</span><span class="n">dash_app</span><span class="p">(</span><span class="n">init_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<p>This will cause the <code>bmi</code> function to be called once automatically at the end of app initialization.
+In this case, all parameters need to have default values.</p>
+<h2 id="interactive-parameter">Interactive parameter</h2>
+<p>Interactive parameters rerun the function each time the input is changed.
+We can use <code>Val</code>'s parameter to mark the interactive mode, for example we mark <code>height</code> as interactive:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nd">@one</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">def</span> <span class="nf">bmi</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">Val</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">=</span> <span class="s2">&quot;Tom&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>        <span class="n">height</span><span class="p">:</span> <span class="n">Val</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">250</span><span class="p">],</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">=</span> <span class="mi">160</span><span class="p">,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>        <span class="n">weight</span><span class="p">:</span> <span class="n">Val</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">):</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">BMI</span> <span class="o">=</span> <span class="n">weight</span> <span class="o">/</span> <span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hi </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. Your BMI is: </span><span class="si">{</span><span class="n">BMI</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="k">return</span> <span class="n">BMI</span>
+</code></pre></div>
+<p><img alt="interactive_arg_dash" src="../imgs/interactive_arg_dash.gif" /></p>
+<p>And, if you pass <code>interactive = True</code> to the <code>.dash_app</code> method, it will mark all parameters as interactive:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">bmi</span><span class="o">.</span><span class="n">dash_app</span><span class="p">(</span><span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="result-show-type">Result show type</h2>
+<p>By default, the <code>result_show_type</code> is <code>'text'</code>, which means that the result will be displayed in text.
+In addition, the results can also be presented in other forms:</p>
+<h3 id="plotly-figure-type">Plotly figure type</h3>
+<p>Dash app can integrate the plotly to drawing dynamic figures in HTML.
+By setting <code>result_show_type</code> to <code>'plotly'</code> and wrap a function return the plotly figure object,
+we can archieve this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span> <span class="nn">oneface</span> <span class="kn">import</span> <span class="n">one</span><span class="p">,</span> <span class="n">Val</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="nn">px</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nd">@one</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="k">def</span> <span class="nf">draw_random_points</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">Val</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>    <span class="k">return</span> <span class="n">fig</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="n">draw_random_points</span><span class="o">.</span><span class="n">dash_app</span><span class="p">(</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>    <span class="n">result_show_type</span><span class="o">=</span><span class="s1">&#39;plotly&#39;</span><span class="p">,</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>    <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="random_points_dash" src="../imgs/random_points_dash_app.gif" /></p>
+<h3 id="download-type">Download type</h3>
+<p>In many cases, the results of running a web application need to be downloaded as a file for the user.
+You can set the <code>result_show_type='download'</code> for this purpose.
+In this case, the target function should return the path to the result file:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span> <span class="nn">oneface</span> <span class="kn">import</span> <span class="n">one</span><span class="p">,</span> <span class="n">Val</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nd">@one</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="k">def</span> <span class="nf">bmi</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">Val</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">=</span> <span class="s2">&quot;Tom&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>        <span class="n">height</span><span class="p">:</span> <span class="n">Val</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">250</span><span class="p">],</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">=</span> <span class="mi">160</span><span class="p">,</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>        <span class="n">weight</span><span class="p">:</span> <span class="n">Val</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">):</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="n">BMI</span> <span class="o">=</span> <span class="n">weight</span> <span class="o">/</span> <span class="p">(</span><span class="n">height</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="n">out_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;./</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_bmi.txt&quot;</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fo</span><span class="p">:</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>        <span class="n">fo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hi </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. Your BMI is: </span><span class="si">{</span><span class="n">BMI</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>    <span class="k">return</span> <span class="n">out_path</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="n">bmi</span><span class="o">.</span><span class="n">dash_app</span><span class="p">(</span><span class="n">result_show_type</span><span class="o">=</span><span class="s2">&quot;download&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><img alt="download_res_dash" src="../imgs/download_res_dash.gif" /></p>
+<h3 id="custom-result-type">Custom result type</h3>
+<p>You can custom the dash app layout by inherit the <code>oneface.dash_app.App</code> class.
+For example we can create a app draw a random series:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># random_series.py</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kn">from</span> <span class="nn">oneface.dash_app</span> <span class="kn">import</span> <span class="n">App</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="kn">from</span> <span class="nn">oneface</span> <span class="kn">import</span> <span class="n">Val</span><span class="p">,</span> <span class="n">one</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="nn">px</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="kn">from</span> <span class="nn">dash</span> <span class="kn">import</span> <span class="n">Dash</span><span class="p">,</span> <span class="n">Output</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">dcc</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="k">class</span> <span class="nc">PlotSeries</span><span class="p">(</span><span class="n">App</span><span class="p">):</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>    <span class="k">def</span> <span class="nf">get_result_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>        <span class="c1"># override the result layout definition</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>        <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_result_layout</span><span class="p">()</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>        <span class="n">layout</span> <span class="o">+=</span> <span class="p">[</span>
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>            <span class="n">dcc</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;line-plot&#39;</span><span class="p">)</span>
+<a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>        <span class="p">]</span>
+<a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>        <span class="k">return</span> <span class="n">layout</span>
+<a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>
+<a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>    <span class="k">def</span> <span class="nf">add_result_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="s2">&quot;Dash&quot;</span><span class="p">):</span>
+<a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>        <span class="c1"># override the result callback definition</span>
+<a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>        <span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
+<a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>            <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;line-plot&quot;</span><span class="p">,</span> <span class="s2">&quot;figure&quot;</span><span class="p">),</span>
+<a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>            <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">),</span>
+<a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a>        <span class="p">)</span>
+<a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a>        <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+<a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a>            <span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+<a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a>            <span class="k">return</span> <span class="n">fig</span>
+<a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a>
+<a id="__codelineno-8-31" name="__codelineno-8-31" href="#__codelineno-8-31"></a><span class="nd">@one</span>
+<a id="__codelineno-8-32" name="__codelineno-8-32" href="#__codelineno-8-32"></a><span class="k">def</span> <span class="nf">random_series</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">Val</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+<a id="__codelineno-8-33" name="__codelineno-8-33" href="#__codelineno-8-33"></a>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+<a id="__codelineno-8-34" name="__codelineno-8-34" href="#__codelineno-8-34"></a>
+<a id="__codelineno-8-35" name="__codelineno-8-35" href="#__codelineno-8-35"></a>
+<a id="__codelineno-8-36" name="__codelineno-8-36" href="#__codelineno-8-36"></a><span class="n">p</span> <span class="o">=</span> <span class="n">PlotSeries</span><span class="p">(</span><span class="n">random_series</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-8-37" name="__codelineno-8-37" href="#__codelineno-8-37"></a><span class="n">p</span><span class="p">()</span>
+</code></pre></div>
+<p>Run this script, we get:</p>
+<p><img alt="random_series_dash_app" src="../imgs/random_series_dash_app.gif" /></p>
+<h2 id="host-and-port">Host and Port</h2>
+<p>Specify the app's host and port:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">bmi</span><span class="o">.</span><span class="n">dash_app</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">9000</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="debug-mode">debug mode</h2>
+<p>The debug mode is useful for debugging errors, use <code>debug=True</code> to open it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">bmi</span><span class="o">.</span><span class="n">dash_app</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.407015b8.min.js"></script>
+      
+    
+  </body>
+</html>
