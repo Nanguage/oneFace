@@ -35,16 +35,20 @@ def get_long_description():
     return "See https://github.com/Nanguage/oneFace"
 
 
-def get_install_requires():
-    requirements = [
-        "funcdesc>=0.1.2",
-        "cmd2func>=0.1.4",
-        "rich",
-        "fire",
-        "qtpy",
-        "pyYAML",
-    ]
+def get_requirements_from_file(filename):
+    requirements = []
+    with open(filename) as f:
+        for line in f.readlines():
+            line = line.strip()
+            if len(line) == 0:
+                continue
+            if line and not line.startswith('#'):
+                requirements.append(line)
     return requirements
+
+
+def get_install_requires():
+    return get_requirements_from_file('requirements.txt')
 
 
 requires_test = ['pytest', 'pytest-cov', 'flake8']
